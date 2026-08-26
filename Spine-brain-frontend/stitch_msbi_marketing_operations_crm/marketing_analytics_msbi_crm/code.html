@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Marketing Analytics - MSBI CRM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#ccdbf4",
+                        "primary": "#073442",
+                        "surface-variant": "#d5e3fd",
+                        "on-secondary-container": "#386977",
+                        "primary-fixed": "#c1e9fa",
+                        "surface-container": "#e6eeff",
+                        "primary-container": "#244b59",
+                        "on-tertiary-fixed-variant": "#354a4e",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "inverse-surface": "#233144",
+                        "surface-bright": "#f8f9ff",
+                        "surface-container-high": "#dde9ff",
+                        "status-error": "#EF4444",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#a5ccdd",
+                        "secondary-fixed-dim": "#9dcedd",
+                        "surface": "#f8f9ff",
+                        "status-success": "#10B981",
+                        "on-secondary-fixed-variant": "#184d5a",
+                        "on-secondary-fixed": "#001f26",
+                        "on-surface-variant": "#41484b",
+                        "inverse-primary": "#a5ccdd",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#71787b",
+                        "status-warning": "#F59E0B",
+                        "on-tertiary-container": "#a2b9bd",
+                        "surface-muted": "#F8FAFC",
+                        "background": "#f8f9ff",
+                        "on-primary-container": "#93bacb",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#1f3337",
+                        "on-surface": "#0d1c2f",
+                        "secondary-fixed": "#b9eafa",
+                        "inverse-on-surface": "#ebf1ff",
+                        "on-tertiary-fixed": "#091f22",
+                        "secondary": "#346572",
+                        "outline-variant": "#c1c7cb",
+                        "on-primary-fixed-variant": "#254c5a",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001f29",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#b4cbcf",
+                        "surface-tint": "#3e6472",
+                        "border-subtle": "#E2E8F0",
+                        "secondary-container": "#b6e8f7",
+                        "on-background": "#0d1c2f",
+                        "surface-container-highest": "#d5e3fd",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#354a4d",
+                        "tertiary-fixed": "#d0e7eb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "container-max": "1440px",
+                        "margin-md": "24px",
+                        "margin-sm": "16px",
+                        "margin-lg": "48px",
+                        "gutter": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom Scrollbar for horizontal scrolling tables on mobile */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface font-body-md antialiased pb-24 md:pb-0">
+<!-- TopAppBar (Hidden on Mobile per rules, but included for completeness if resized) -->
+<header class="hidden md:flex justify-between items-center h-16 w-full pl-72 pr-margin-md max-w-container-max mx-auto bg-surface-container-lowest border-b border-border-subtle fixed top-0 right-0 z-40">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container-low transition-all p-2 rounded-full" data-icon="menu">menu</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Marketing Analytics</h1>
+</div>
+<div>
+<span class="font-body-md text-body-md text-primary font-bold cursor-pointer hover:bg-surface-container-low transition-all p-2 rounded-lg">Admin User</span>
+</div>
+</header>
+<!-- NavigationDrawer (Hidden on Mobile) -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 py-base bg-surface-container-lowest border-r border-border-subtle z-50">
+<div class="px-4 py-6 border-b border-border-subtle mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary font-bold font-headline-sm text-headline-sm">MS</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary">MSBI CRM</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Marketing Portal</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-2 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors cursor-pointer active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold hover:bg-surface-container transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined icon-fill" data-icon="analytics" data-weight="fill">analytics</span>
+<span class="font-body-sm text-body-sm">Marketing Analytics</span>
+</a>
+<!-- Other Nav Items abbreviated for brevity in this single-screen demo -->
+</div>
+</nav>
+<!-- Mobile Header (Visible only on mobile) -->
+<header class="md:hidden flex justify-between items-center h-16 px-4 bg-surface-container-lowest border-b border-border-subtle sticky top-0 z-30 shadow-sm">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Analytics</h1>
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-headline-sm text-headline-sm font-bold">A</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 md:pt-24 pt-4 px-4 md:px-margin-md max-w-container-max mx-auto">
+<!-- Page Header & Actions -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-1">Performance Overview</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Last 30 Days (Oct 1 - Oct 31, 2023)</p>
+</div>
+<button class="bg-primary text-on-primary font-body-sm text-body-sm px-4 py-2 rounded-lg hover:bg-tertiary transition-colors flex items-center justify-center gap-2 w-full md:w-auto">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+                Export Report
+            </button>
+</div>
+<!-- KPI Grid (Bento Style) -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+<!-- Total Leads -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-4 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Total Leads</span>
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="group">group</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary mb-1">1,248</div>
+<div class="flex items-center gap-1 text-status-success font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span>12.5%</span>
+</div>
+</div>
+</div>
+<!-- Qualified Leads -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-4 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Qualified Leads</span>
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="verified">verified</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary mb-1">412</div>
+<div class="flex items-center gap-1 text-status-success font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span>8.2%</span>
+</div>
+</div>
+</div>
+<!-- Call Answer Rate -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-4 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Call Answer Rate</span>
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="call">call</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary mb-1">86%</div>
+<div class="flex items-center gap-1 text-status-error font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-sm" data-icon="trending_down">trending_down</span>
+<span>-2.1%</span>
+</div>
+</div>
+<!-- Mini visual indicator for missed vs answered -->
+<div class="w-full h-1.5 bg-surface-variant rounded-full mt-3 overflow-hidden flex">
+<div class="h-full bg-primary" style="width: 86%"></div>
+<div class="h-full bg-status-warning" style="width: 14%"></div>
+</div>
+</div>
+<!-- ROI by Source (Blended) -->
+<div class="bg-primary border border-primary-container rounded-xl p-4 flex flex-col justify-between text-on-primary">
+<div class="flex justify-between items-start mb-2">
+<span class="font-body-sm text-body-sm text-primary-fixed">Blended ROI</span>
+<span class="material-symbols-outlined text-primary-fixed text-lg" data-icon="payments">payments</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md mb-1">324%</div>
+<div class="flex items-center gap-1 text-status-success font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span>18.4%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Charts Section (Asymmetric Layout) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<!-- Lead Trend (Span 2 columns on desktop) -->
+<div class="md:col-span-2 bg-surface-container-lowest border border-border-subtle rounded-xl p-5">
+<div class="flex justify-between items-center mb-4 border-b border-border-subtle pb-3">
+<h3 class="font-headline-sm text-headline-sm text-primary">Lead Volume Trend</h3>
+<select class="font-body-sm text-body-sm border border-border-subtle rounded-lg px-2 py-1 bg-surface-muted text-on-surface-variant focus:ring-2 focus:ring-secondary-fixed-dim outline-none">
+<option>Weekly</option>
+<option>Monthly</option>
+</select>
+</div>
+<!-- Simulated Bar Chart using HTML/CSS -->
+<div class="h-48 flex items-end justify-between gap-1 md:gap-2 mt-6">
+<!-- Bars -->
+<div class="w-full flex flex-col items-center gap-2">
+<div class="w-full bg-secondary-container hover:bg-primary-container transition-colors rounded-t-sm" style="height: 40%;"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">W1</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2">
+<div class="w-full bg-secondary-container hover:bg-primary-container transition-colors rounded-t-sm" style="height: 55%;"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">W2</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2">
+<div class="w-full bg-primary hover:bg-primary-container transition-colors rounded-t-sm relative group" style="height: 85%;">
+<!-- Tooltip -->
+<div class="hidden group-hover:block absolute -top-8 left-1/2 transform -translate-x-1/2 bg-inverse-surface text-on-secondary font-label-md text-label-md px-2 py-1 rounded">342</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant font-bold text-primary">W3</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2">
+<div class="w-full bg-secondary-container hover:bg-primary-container transition-colors rounded-t-sm" style="height: 65%;"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">W4</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2">
+<div class="w-full bg-secondary-container hover:bg-primary-container transition-colors rounded-t-sm" style="height: 75%;"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">W5</span>
+</div>
+</div>
+</div>
+<!-- Source Attribution -->
+<div class="md:col-span-1 bg-surface-container-lowest border border-border-subtle rounded-xl p-5 flex flex-col">
+<div class="border-b border-border-subtle pb-3 mb-4">
+<h3 class="font-headline-sm text-headline-sm text-primary">Source Attribution</h3>
+</div>
+<div class="flex-1 flex flex-col justify-center space-y-4">
+<!-- Organic -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="font-body-sm text-body-sm text-on-surface">Organic Search</span>
+</div>
+<span class="font-data-mono text-data-mono text-primary font-bold">45%</span>
+</div>
+<!-- Paid -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<span class="font-body-sm text-body-sm text-on-surface">Paid Search</span>
+</div>
+<span class="font-data-mono text-data-mono text-primary font-bold">30%</span>
+</div>
+<!-- Referral -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+<span class="font-body-sm text-body-sm text-on-surface">Referral (MD)</span>
+</div>
+<span class="font-data-mono text-data-mono text-primary font-bold">15%</span>
+</div>
+<!-- Social -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-surface-variant"></div>
+<span class="font-body-sm text-body-sm text-on-surface">Social Media</span>
+</div>
+<span class="font-data-mono text-data-mono text-primary font-bold">10%</span>
+</div>
+</div>
+<!-- Visual Bar -->
+<div class="w-full h-2 rounded-full flex overflow-hidden mt-6">
+<div class="bg-primary h-full" style="width: 45%"></div>
+<div class="bg-secondary h-full" style="width: 30%"></div>
+<div class="bg-secondary-container h-full" style="width: 15%"></div>
+<div class="bg-surface-variant h-full" style="width: 10%"></div>
+</div>
+</div>
+</div>
+<!-- Data Tables Section -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl overflow-hidden mb-8">
+<div class="p-5 border-b border-border-subtle flex justify-between items-center bg-surface-muted">
+<h3 class="font-headline-sm text-headline-sm text-primary">Top Performing Campaigns</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary" data-icon="more_vert">more_vert</span>
+</div>
+<!-- Mobile Horizontal Scroll Container -->
+<div class="w-full overflow-x-auto hide-scrollbar">
+<table class="w-full min-w-[600px] text-left border-collapse">
+<thead>
+<tr class="bg-surface-muted border-b border-border-subtle">
+<th class="p-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Campaign Name</th>
+<th class="p-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="p-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Spend</th>
+<th class="p-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Leads</th>
+<th class="p-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">CPL</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm divide-y divide-border-subtle">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-3 font-medium text-primary">Spinal Fusion Awareness - Q3</td>
+<td class="p-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-fixed text-on-secondary-fixed">Active</span>
+</td>
+<td class="p-3 font-data-mono text-data-mono text-right">$4,500</td>
+<td class="p-3 font-data-mono text-data-mono text-right">142</td>
+<td class="p-3 font-data-mono text-data-mono text-right">$31.69</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-3 font-medium text-primary">Non-Surgical Relief Retargeting</td>
+<td class="p-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-fixed text-on-secondary-fixed">Active</span>
+</td>
+<td class="p-3 font-data-mono text-data-mono text-right">$2,100</td>
+<td class="p-3 font-data-mono text-data-mono text-right">86</td>
+<td class="p-3 font-data-mono text-data-mono text-right">$24.41</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-3 font-medium text-primary">Local Seminar Registration</td>
+<td class="p-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-container-highest text-on-surface-variant">Completed</span>
+</td>
+<td class="p-3 font-data-mono text-data-mono text-right">$1,250</td>
+<td class="p-3 font-data-mono text-data-mono text-right">54</td>
+<td class="p-3 font-data-mono text-data-mono text-right">$23.14</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden flex justify-around items-center h-16 w-full px-4 fixed bottom-0 z-50 bg-surface-container-lowest border-t border-border-subtle shadow-[0_-4px_20px_rgba(36,75,89,0.08)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full p-2 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined icon-fill" data-icon="analytics" data-weight="fill">analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</a>
+</nav>
+</body></html>

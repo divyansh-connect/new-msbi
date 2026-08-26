@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --msbi-ice-teal-bg: #E6F0F3;
+  --msbi-header-teal: #CDE4E8;
+  --msbi-navy: #1D3A46;
+  --msbi-medium-teal: #244B59;
+  --msbi-electric-blue: #045CB4;
+  --msbi-dark-slate: #1D3A46;
+  --msbi-body-slate: #335360;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.icon-fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Soft Teal Active Sidebar Pill (matching midwestspine.net light ice teal) */
+.sidebar-active-tab {
+  background-color: #CDE4E8 !important;
+  color: #1D3A46 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(36, 75, 89, 0.12);
+}
+
+.sidebar-active-tab .material-symbols-outlined {
+  color: #1D3A46 !important;
+}
+
+/* Elegant Medium Teal Primary Button */
+.btn-primary-vibrant {
+  background-color: #244B59 !important;
+  color: #FFFFFF !important;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 4px 12px rgba(36, 75, 89, 0.2);
+}
+
+.btn-primary-vibrant:hover {
+  background-color: #1A3944 !important;
+  box-shadow: 0 6px 16px rgba(36, 75, 89, 0.3);
+}
+
+/* Header Banner Tint */
+.top-header-ice-teal {
+  background-color: #CDE4E8 !important;
+  border-bottom: 1px solid #BACED6 !important;
+}

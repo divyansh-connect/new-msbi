@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reputation Management - MSBI CRM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400..700&amp;family=Inter:wght@400..600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#ccdbf4",
+                      "primary": "#073442",
+                      "surface-variant": "#d5e3fd",
+                      "on-secondary-container": "#386977",
+                      "primary-fixed": "#c1e9fa",
+                      "surface-container": "#e6eeff",
+                      "primary-container": "#244b59",
+                      "on-tertiary-fixed-variant": "#354a4e",
+                      "on-error": "#ffffff",
+                      "surface-container-low": "#eff4ff",
+                      "inverse-surface": "#233144",
+                      "surface-bright": "#f8f9ff",
+                      "surface-container-high": "#dde9ff",
+                      "status-error": "#EF4444",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#a5ccdd",
+                      "secondary-fixed-dim": "#9dcedd",
+                      "surface": "#f8f9ff",
+                      "status-success": "#10B981",
+                      "on-secondary-fixed-variant": "#184d5a",
+                      "on-secondary-fixed": "#001f26",
+                      "on-surface-variant": "#41484b",
+                      "inverse-primary": "#a5ccdd",
+                      "on-tertiary": "#ffffff",
+                      "outline": "#71787b",
+                      "status-warning": "#F59E0B",
+                      "on-tertiary-container": "#a2b9bd",
+                      "surface-muted": "#F8FAFC",
+                      "background": "#f8f9ff",
+                      "on-primary-container": "#93bacb",
+                      "surface-container-lowest": "#ffffff",
+                      "error": "#ba1a1a",
+                      "tertiary": "#1f3337",
+                      "on-surface": "#0d1c2f",
+                      "secondary-fixed": "#b9eafa",
+                      "inverse-on-surface": "#ebf1ff",
+                      "on-tertiary-fixed": "#091f22",
+                      "secondary": "#346572",
+                      "outline-variant": "#c1c7cb",
+                      "on-primary-fixed-variant": "#254c5a",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed": "#001f29",
+                      "error-container": "#ffdad6",
+                      "tertiary-fixed-dim": "#b4cbcf",
+                      "surface-tint": "#3e6472",
+                      "border-subtle": "#E2E8F0",
+                      "secondary-container": "#b6e8f7",
+                      "on-background": "#0d1c2f",
+                      "surface-container-highest": "#d5e3fd",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#354a4d",
+                      "tertiary-fixed": "#d0e7eb"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "container-max": "1440px",
+                      "margin-md": "24px",
+                      "margin-sm": "16px",
+                      "margin-lg": "48px",
+                      "gutter": "20px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Hanken Grotesk"],
+                      "body-sm": ["Inter"],
+                      "headline-sm": ["Hanken Grotesk"],
+                      "body-lg": ["Inter"],
+                      "data-mono": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-md": ["Hanken Grotesk"],
+                      "display-lg": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { @apply bg-background text-on-surface font-body-md; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 right-0 z-40 bg-surface-container-lowest dark:bg-inverse-surface border-b border-border-subtle dark:border-outline-variant md:hidden">
+<div class="flex justify-between items-center h-16 w-full px-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary cursor-pointer active:scale-95 duration-150" data-icon="menu">menu</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">Reputation Management</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden">
+<img alt="Admin Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a female healthcare administrator in her late 30s, smiling gently. She is wearing a modern dark teal scrub top with a subtle MSBI logo embroidered on the left chest. The background is a slightly blurred, bright, modern medical office with soft, cool lighting emphasizing a clean, clinical aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfqhVuaTx96s3RdBngSfa4P4eZ8W3ASSqQbkqYDViS1HnRpLe_oREvkvID52cn94MSLOENl9myUWy-LEZjSXcExBcm34rdWweD9VSzQYLNNYP1VEGeRaFNXWLU0KQItUIcKjzokztm1MgZVHVe3KoP6sKJezgPRMPEDcEdYj47_-00n0wkHOLaXdZ9uGgpguyd6kd_xUYgJfKT71IIUudDweiKMWWithJgXISFx3aO3CMlDNRwU3jJjA"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="pt-20 px-4 flex flex-col gap-margin-sm max-w-container-max mx-auto md:hidden">
+<!-- Dashboard Overview Grid -->
+<section class="grid grid-cols-2 gap-4">
+<!-- Overall Rating -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col gap-2">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-md text-label-md uppercase">Overall Rating</span>
+<span class="material-symbols-outlined text-status-warning icon-fill text-lg" data-icon="star">star</span>
+</div>
+<div class="flex items-end gap-2 mt-1">
+<span class="font-headline-lg text-headline-lg text-primary">4.8</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mb-1">/ 5.0</span>
+</div>
+<div class="font-body-sm text-body-sm text-status-success flex items-center gap-1 mt-auto">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span> +0.2 this month
+                </div>
+</div>
+<!-- Total Reviews -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col gap-2">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-md text-label-md uppercase">Total Reviews</span>
+<span class="material-symbols-outlined text-primary text-lg" data-icon="forum">forum</span>
+</div>
+<div class="flex items-end gap-2 mt-1">
+<span class="font-headline-lg text-headline-lg text-primary font-data-mono">1,248</span>
+</div>
+<div class="font-body-sm text-body-sm text-status-success flex items-center gap-1 mt-auto">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span> +42 this month
+                </div>
+</div>
+<!-- Review Goal Progress -->
+<div class="col-span-2 bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md uppercase text-on-surface-variant">Q3 Goal Progress</span>
+<span class="font-body-sm text-body-sm text-primary font-data-mono">85%</span>
+</div>
+<div class="w-full bg-surface-dim h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 85%;"></div>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant text-right">
+<span class="font-data-mono">1,248</span> / 1,500 Reviews Target
+                </div>
+</div>
+</section>
+<!-- Clinic/Provider Rankings -->
+<section class="bg-surface-container-lowest border border-border-subtle rounded-lg mt-2">
+<div class="p-4 border-b border-border-subtle flex justify-between items-center">
+<h2 class="font-headline-sm text-headline-sm text-primary">Top Locations</h2>
+<button class="text-primary text-sm font-label-md uppercase flex items-center gap-1">View All <span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span></button>
+</div>
+<div class="flex flex-col">
+<!-- Location 1 -->
+<div class="p-4 border-b border-border-subtle last:border-0 flex items-center justify-between hover:bg-surface-muted transition-colors">
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface">Minneapolis Main Campus</span>
+<div class="flex items-center gap-2">
+<span class="font-data-mono text-data-mono text-primary font-bold">4.9</span>
+<div class="flex items-center text-status-warning text-sm">
+<span class="material-symbols-outlined icon-fill" data-icon="star">star</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">(842)</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<!-- Location 2 -->
+<div class="p-4 border-b border-border-subtle last:border-0 flex items-center justify-between hover:bg-surface-muted transition-colors">
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface">Edina Spine Center</span>
+<div class="flex items-center gap-2">
+<span class="font-data-mono text-data-mono text-primary font-bold">4.7</span>
+<div class="flex items-center text-status-warning text-sm">
+<span class="material-symbols-outlined icon-fill" data-icon="star">star</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">(256)</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<!-- Location 3 -->
+<div class="p-4 border-b border-border-subtle last:border-0 flex items-center justify-between hover:bg-surface-muted transition-colors">
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface">St. Paul Clinic</span>
+<div class="flex items-center gap-2">
+<span class="font-data-mono text-data-mono text-primary font-bold">4.5</span>
+<div class="flex items-center text-status-warning text-sm">
+<span class="material-symbols-outlined icon-fill" data-icon="star">star</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">(150)</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</section>
+<!-- Filter Controls -->
+<section class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mt-4">
+<button class="bg-primary-container text-on-primary-container border border-primary-container px-4 py-2 rounded-full font-label-md text-label-md uppercase whitespace-nowrap active:scale-95 transition-transform flex items-center gap-2">
+                All Reviews
+            </button>
+<button class="bg-surface-container-lowest text-on-surface-variant border border-border-subtle px-4 py-2 rounded-full font-label-md text-label-md uppercase whitespace-nowrap active:scale-95 transition-transform flex items-center gap-1">
+                5 <span class="material-symbols-outlined text-sm icon-fill text-status-warning" data-icon="star">star</span>
+</button>
+<button class="bg-surface-container-lowest text-on-surface-variant border border-border-subtle px-4 py-2 rounded-full font-label-md text-label-md uppercase whitespace-nowrap active:scale-95 transition-transform flex items-center gap-1">
+                1-3 <span class="material-symbols-outlined text-sm icon-fill text-status-warning" data-icon="star">star</span>
+</button>
+<button class="bg-surface-container-lowest text-on-surface-variant border border-border-subtle px-4 py-2 rounded-full font-label-md text-label-md uppercase whitespace-nowrap active:scale-95 transition-transform flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span> Location
+            </button>
+</section>
+<!-- Review Feed -->
+<section class="flex flex-col gap-4 mt-2">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-1">Recent Reviews</h2>
+<!-- Review Card 1 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex gap-3 items-center">
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-lg">
+                            JD
+                        </div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-bold text-on-surface">John Doe</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="verified">verified</span> Verified Patient</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<div class="flex text-status-warning">
+<span class="material-symbols-outlined icon-fill text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined icon-fill text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined icon-fill text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined icon-fill text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined icon-fill text-sm" data-icon="star">star</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">2 days ago</span>
+</div>
+</div>
+<div class="bg-surface-muted px-2 py-1 rounded w-fit flex items-center gap-1 mt-1">
+<img alt="Google" class="w-4 h-4 object-contain" data-alt="A small recognizable Google 'G' logo icon, minimalist and flat style, used as a badge on a white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPdqD1Vx6yjxpwkgDqj9y612SNOQA6Lla9rpD7uOAqMlXyo0ZEO5sNm-7u6f7JqKCR8R6NM9Y91KZqC4MzOH2xxXFT9THS9Dzf7CA4QZGR2dbzJekkU773FqUebdABruNqiqKsXw3xWscGTqyu5rTls3GFFgly0u1rbqWj6u2nBM9uJwE8MFt3w9ombIDdsPhnjGTc-DzziqLSSMvbsUEK2BgZ2F0kfO-x5fAgHm6XB1aAmeLZf5CMng"/>
+<span class="font-label-md text-label-md text-on-surface-variant">Google Review • Mpls Campus</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mt-2">
+                    "Dr. Smith and the team at MSBI were incredible. I was nervous about my spinal surgery, but they took the time to explain everything clearly. The facility is spotless and professional."
+                </p>
+<div class="mt-2 pt-3 border-t border-border-subtle flex gap-2">
+<button class="flex-1 bg-surface-container-lowest border border-border-subtle text-primary py-2 rounded font-label-md text-label-md uppercase active:bg-surface-muted transition-colors text-center">Reply Publicly</button>
+<button class="flex-1 bg-primary text-on-primary py-2 rounded font-label-md text-label-md uppercase active:bg-primary-container transition-colors text-center">Mark Resolved</button>
+</div>
+</div>
+<!-- Review Card 2 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex gap-3 items-center">
+<div class="w-10 h-10 rounded-full bg-surface-dim text-on-surface flex items-center justify-center font-bold text-lg">
+                            SA
+                        </div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-bold text-on-surface">Sarah Anderson</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Walk-in Patient</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<div class="flex text-status-warning">
+<span class="material-symbols-outlined icon-fill text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star">star</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">4 days ago</span>
+</div>
+</div>
+<div class="bg-surface-muted px-2 py-1 rounded w-fit flex items-center gap-1 mt-1">
+<img alt="Google" class="w-4 h-4 object-contain" data-alt="A small recognizable Google 'G' logo icon, minimalist and flat style, used as a badge on a white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEJGGgClME8QeVf6HDYUXkKCBq6VQQeXRx_BiUSq3cChu4DRd0SL-su3LbVXhn7tsT_zkbf7-NV29VP-ALG5PzXO6ZoZcL3QuEpkeWRq2i3EYcshPQHG5H-4-AtHpa_RucRHzQKlwm7_NSYjbkcdsvySdxyBV-vy8_mnjCHWkMs4NNbjtXXs0DsHEBLj8pVtz8PniXTdgFXBdfhA0TRNRBOuaXHE1wATY0yOilPIc4cHarUPGlIiJyFA"/>
+<span class="font-label-md text-label-md text-on-surface-variant">Google Review • Edina Center</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mt-2">
+                    "Wait times were longer than expected, and the billing department seemed confused about my insurance. The medical care was fine, but the admin side needs work."
+                </p>
+<div class="mt-2 pt-3 border-t border-border-subtle flex gap-2">
+<button class="w-full bg-[#CDE4E8] text-[#244B59] border border-[#244B59] py-2 rounded font-label-md text-label-md uppercase active:bg-surface-muted transition-colors text-center flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="warning">warning</span> Escalate to Admin
+                     </button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 md:hidden bg-surface-container-lowest dark:bg-inverse-surface border-t border-border-subtle shadow-lg">
+<div class="flex justify-around items-center h-16 w-full px-4">
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+</div>
+<!-- Active State based on "Reputation Management" mapping closest to Star Rate / Feedback which isn't in bottom nav JSON icons, so we map it logically. 
+                  The JSON BottomNavBar icons: ["dashboard", "analytics", "campaign", "settings"]. 
+                  Since this isn't a direct match, and "Reputation Management" is missing from the 4 bottom icons, I will highlight Analytics as a fallback or leave unhighlighted. 
+                  Actually, the instructions say "ONLY use semantic intent if there is no direct match". Reputation management is a form of analytics/marketing. I will highlight Analytics. 
+                  Wait, the JSON navigation drawer has "Reputation Management" as "star_rate". It's not in the bottom nav. 
+                  I will highlight 'campaign' as marketing/reputation management.
+             -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 cursor-pointer hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 cursor-pointer hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</div>
+</div>
+<!-- Note: Realized the JSON only has 4 icons for BottomNavBar: ["dashboard", "analytics", "campaign", "settings"]. I added 5. Correcting to 4. -->
+</nav>
+<script>
+        // Fix bottom nav to match JSON strictly
+        const nav = document.querySelector('nav div');
+        nav.innerHTML = `
+            <div class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 cursor-pointer hover:bg-surface-container">
+                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            </div>
+            <div class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 cursor-pointer hover:bg-surface-container">
+                <span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+            </div>
+            <div class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full p-2 active:scale-90 cursor-pointer hover:bg-surface-container">
+                <span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+            </div>
+            <div class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:scale-90 cursor-pointer hover:bg-surface-container">
+                <span class="material-symbols-outlined" data-icon="settings">settings</span>
+            </div>
+        `;
+    </script>
+</body></html>

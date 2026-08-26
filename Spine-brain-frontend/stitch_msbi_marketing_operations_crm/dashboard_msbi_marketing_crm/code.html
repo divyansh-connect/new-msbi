@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MSBI Marketing CRM - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#ccdbf4",
+                      "primary": "#073442",
+                      "surface-variant": "#d5e3fd",
+                      "on-secondary-container": "#386977",
+                      "primary-fixed": "#c1e9fa",
+                      "surface-container": "#e6eeff",
+                      "primary-container": "#244b59",
+                      "on-tertiary-fixed-variant": "#354a4e",
+                      "on-error": "#ffffff",
+                      "surface-container-low": "#eff4ff",
+                      "inverse-surface": "#233144",
+                      "surface-bright": "#f8f9ff",
+                      "surface-container-high": "#dde9ff",
+                      "status-error": "#EF4444",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#a5ccdd",
+                      "secondary-fixed-dim": "#9dcedd",
+                      "surface": "#f8f9ff",
+                      "status-success": "#10B981",
+                      "on-secondary-fixed-variant": "#184d5a",
+                      "on-secondary-fixed": "#001f26",
+                      "on-surface-variant": "#41484b",
+                      "inverse-primary": "#a5ccdd",
+                      "on-tertiary": "#ffffff",
+                      "outline": "#71787b",
+                      "status-warning": "#F59E0B",
+                      "on-tertiary-container": "#a2b9bd",
+                      "surface-muted": "#F8FAFC",
+                      "background": "#f8f9ff",
+                      "on-primary-container": "#93bacb",
+                      "surface-container-lowest": "#ffffff",
+                      "error": "#ba1a1a",
+                      "tertiary": "#1f3337",
+                      "on-surface": "#0d1c2f",
+                      "secondary-fixed": "#b9eafa",
+                      "inverse-on-surface": "#ebf1ff",
+                      "on-tertiary-fixed": "#091f22",
+                      "secondary": "#346572",
+                      "outline-variant": "#c1c7cb",
+                      "on-primary-fixed-variant": "#254c5a",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed": "#001f29",
+                      "error-container": "#ffdad6",
+                      "tertiary-fixed-dim": "#b4cbcf",
+                      "surface-tint": "#3e6472",
+                      "border-subtle": "#E2E8F0",
+                      "secondary-container": "#b6e8f7",
+                      "on-background": "#0d1c2f",
+                      "surface-container-highest": "#d5e3fd",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#354a4d",
+                      "tertiary-fixed": "#d0e7eb"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "container-max": "1440px",
+                      "margin-md": "24px",
+                      "margin-sm": "16px",
+                      "margin-lg": "48px",
+                      "gutter": "20px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "data-mono": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "data-mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface font-body-md antialiased min-h-screen pb-20 md:pb-0">
+<!-- TopAppBar -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface fixed top-0 right-0 z-40 border-b border-border-subtle dark:border-outline-variant w-full">
+<div class="flex justify-between items-center h-16 w-full px-margin-sm md:pl-72 md:pr-margin-md max-w-container-max mx-auto">
+<div class="flex items-center gap-3">
+<button class="md:hidden text-primary dark:text-primary-fixed cursor-pointer" onclick="document.getElementById('mobile-drawer').classList.toggle('-translate-x-full')">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="font-headline-md text-headline-md font-bold text-primary">MSBI CRM</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-label-md hidden sm:inline-block">Admin User</span>
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+                    AU
+                </div>
+</div>
+</div>
+</header>
+<!-- NavigationDrawer (Mobile Hidden initially, visible on md) -->
+<nav class="bg-surface-container-lowest dark:bg-inverse-surface h-screen w-64 fixed left-0 top-0 border-r border-border-subtle dark:border-outline-variant z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out" id="mobile-drawer">
+<div class="flex flex-col h-full py-base">
+<div class="px-4 py-4 mb-4 flex justify-between items-center">
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">MSBI CRM</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Marketing Portal</p>
+</div>
+<button class="md:hidden text-on-surface-variant" onclick="document.getElementById('mobile-drawer').classList.add('-translate-x-full')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<ul class="flex-1 overflow-y-auto px-2 space-y-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Marketing Analytics</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span>Campaign Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Budget Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">star_rate</span>
+<span>Reputation Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">handshake</span>
+<span>Vendor Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">description</span>
+<span>Reports</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">extension</span>
+<span>Integrations</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">group_add</span>
+<span>Users &amp; Roles</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="pt-20 px-margin-sm md:px-margin-md md:pl-72 max-w-container-max mx-auto space-y-6">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">Dashboard</h1>
+<p class="font-body-md text-on-surface-variant">Welcome back. Here's what's happening with your marketing campaigns.</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<button class="bg-surface-container-lowest border border-border-subtle rounded flex items-center gap-2 px-3 py-1.5 text-body-sm text-on-surface-variant hover:border-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                    Last 30 Days
+                    <span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+<button class="bg-surface-container-lowest border border-border-subtle rounded flex items-center gap-2 px-3 py-1.5 text-body-sm text-on-surface-variant hover:border-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+                    All Locations
+                    <span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+</div>
+</div>
+<!-- KPI Grid -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+<!-- KPI 1 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col justify-between hover:border-secondary-fixed-dim transition-colors group">
+<div class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="material-symbols-outlined text-[20px]">language</span>
+<span class="font-label-md text-label-md uppercase">Web Traffic</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary group-hover:text-primary-container">24,580</div>
+<div class="text-body-sm text-status-success flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> 12%
+                    </div>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col justify-between hover:border-secondary-fixed-dim transition-colors group">
+<div class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+<span class="font-label-md text-label-md uppercase">Leads</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary group-hover:text-primary-container">1,248</div>
+<div class="text-body-sm text-status-success flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> 8.4%
+                    </div>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col justify-between hover:border-secondary-fixed-dim transition-colors group">
+<div class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="material-symbols-outlined text-[20px]">call</span>
+<span class="font-label-md text-label-md uppercase">Phone Calls</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary group-hover:text-primary-container">342</div>
+<div class="text-body-sm text-status-error flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">trending_down</span> 2.1%
+                    </div>
+</div>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col justify-between hover:border-secondary-fixed-dim transition-colors group">
+<div class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="material-symbols-outlined text-[20px]">data_usage</span>
+<span class="font-label-md text-label-md uppercase">Conv. Rate</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary group-hover:text-primary-container">8.6%</div>
+<div class="text-body-sm text-status-success flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> 0.5%
+                    </div>
+</div>
+</div>
+<!-- KPI 5 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col justify-between hover:border-secondary-fixed-dim transition-colors group">
+<div class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="material-symbols-outlined text-[20px]">attach_money</span>
+<span class="font-label-md text-label-md uppercase">ROI</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary group-hover:text-primary-container">4.2x</div>
+<div class="text-body-sm text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">horizontal_rule</span> 0.0%
+                    </div>
+</div>
+</div>
+<!-- KPI 6 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col justify-between hover:border-secondary-fixed-dim transition-colors group">
+<div class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+<span class="font-label-md text-label-md uppercase">Spend</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary group-hover:text-primary-container">$18,420</div>
+<div class="text-body-sm text-status-warning flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> 5.2%
+                    </div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="bg-surface-container-lowest dark:bg-inverse-surface fixed bottom-0 w-full z-50 md:hidden border-t border-border-subtle shadow-lg">
+<div class="flex justify-around items-center h-16 w-full px-4">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full p-2 w-12 h-12 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 w-12 h-12 hover:bg-surface-container rounded-full active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 w-12 h-12 hover:bg-surface-container rounded-full active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">campaign</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 w-12 h-12 hover:bg-surface-container rounded-full active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+</a>
+</div>
+</nav>
+</body></html>

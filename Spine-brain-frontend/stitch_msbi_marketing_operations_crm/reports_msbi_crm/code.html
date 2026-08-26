@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MSBI Marketing CRM - Reports</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#ccdbf4",
+                        "primary": "#073442",
+                        "surface-variant": "#d5e3fd",
+                        "on-secondary-container": "#386977",
+                        "primary-fixed": "#c1e9fa",
+                        "surface-container": "#e6eeff",
+                        "primary-container": "#244b59",
+                        "on-tertiary-fixed-variant": "#354a4e",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "inverse-surface": "#233144",
+                        "surface-bright": "#f8f9ff",
+                        "surface-container-high": "#dde9ff",
+                        "status-error": "#EF4444",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#a5ccdd",
+                        "secondary-fixed-dim": "#9dcedd",
+                        "surface": "#f8f9ff",
+                        "status-success": "#10B981",
+                        "on-secondary-fixed-variant": "#184d5a",
+                        "on-secondary-fixed": "#001f26",
+                        "on-surface-variant": "#41484b",
+                        "inverse-primary": "#a5ccdd",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#71787b",
+                        "status-warning": "#F59E0B",
+                        "on-tertiary-container": "#a2b9bd",
+                        "surface-muted": "#F8FAFC",
+                        "background": "#f8f9ff",
+                        "on-primary-container": "#93bacb",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#1f3337",
+                        "on-surface": "#0d1c2f",
+                        "secondary-fixed": "#b9eafa",
+                        "inverse-on-surface": "#ebf1ff",
+                        "on-tertiary-fixed": "#091f22",
+                        "secondary": "#346572",
+                        "outline-variant": "#c1c7cb",
+                        "on-primary-fixed-variant": "#254c5a",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001f29",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#b4cbcf",
+                        "surface-tint": "#3e6472",
+                        "border-subtle": "#E2E8F0",
+                        "secondary-container": "#b6e8f7",
+                        "on-background": "#0d1c2f",
+                        "surface-container-highest": "#d5e3fd",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#354a4d",
+                        "tertiary-fixed": "#d0e7eb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "container-max": "1440px",
+                        "margin-md": "24px",
+                        "margin-sm": "16px",
+                        "margin-lg": "48px",
+                        "gutter": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Hide scrollbar for horizontal scroll areas */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen font-body-md pb-24 md:pb-0 md:pt-16 md:pl-64">
+<!-- Mobile Top Header -->
+<header class="bg-surface-container-lowest text-primary flex justify-between items-center h-16 w-full px-margin-sm md:hidden fixed top-0 z-40">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-headline-md">menu</span>
+<span class="font-headline-md text-headline-md font-bold">Reports</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-body-sm text-body-sm">Admin User</span>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-label-md text-label-md">AU</div>
+</div>
+</header>
+<!-- Desktop TopAppBar (from JSON) -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface text-primary dark:text-primary-fixed font-headline-sm text-headline-sm fixed top-0 right-0 z-40 border-b border-border-subtle dark:border-outline-variant flat no shadows flex justify-between items-center h-16 w-full pl-72 pr-margin-md max-w-container-max mx-auto hidden md:flex">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined cursor-pointer">menu</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Reports</h1>
+</div>
+<div class="flex items-center gap-4 cursor-pointer hover:bg-surface-container-low transition-all p-2 rounded">
+<span class="text-on-surface-variant text-body-md font-body-md">Admin User</span>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-label-md text-label-md">AU</div>
+</div>
+</header>
+<!-- Desktop NavigationDrawer (from JSON) -->
+<nav class="bg-surface-container-lowest dark:bg-inverse-surface h-screen w-64 fixed left-0 top-0 border-r border-border-subtle dark:border-outline-variant flat no shadows flex flex-col h-full py-base hidden md:flex z-50">
+<div class="px-4 py-6 mb-4">
+<div class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed mb-1">MSBI CRM</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Marketing Portal</div>
+</div>
+<ul class="flex flex-col gap-1 px-2 overflow-y-auto hide-scrollbar">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-sm text-body-sm">Marketing Analytics</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span class="font-body-sm text-body-sm">Campaign Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-sm text-body-sm">Budget Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">star_rate</span>
+<span class="font-body-sm text-body-sm">Reputation Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">handshake</span>
+<span class="font-body-sm text-body-sm">Vendor Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-body-sm text-body-sm cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined fill">description</span>
+<span>Reports</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">extension</span>
+<span class="font-body-sm text-body-sm">Integrations</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">group_add</span>
+<span class="font-body-sm text-body-sm">Users &amp; Roles</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container dark:hover:bg-primary-container/20 transition-colors cursor-pointer active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<main class="w-full max-w-container-max mx-auto p-margin-sm md:p-margin-md pt-20 md:pt-margin-md flex flex-col gap-margin-md">
+<!-- Filters & Navigation -->
+<section class="flex flex-col gap-4">
+<!-- Submenu Tabs -->
+<div class="flex overflow-x-auto hide-scrollbar gap-2 pb-2 border-b border-border-subtle">
+<button class="px-4 py-2 font-label-md text-label-md text-primary font-bold border-b-2 border-primary whitespace-nowrap">Executive</button>
+<button class="px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low transition-all rounded-t whitespace-nowrap">Marketing</button>
+<button class="px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low transition-all rounded-t whitespace-nowrap">ROI</button>
+<button class="px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low transition-all rounded-t whitespace-nowrap">Export Center</button>
+</div>
+<!-- Filter Controls -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface-variant">Date Range</label>
+<div class="relative">
+<select class="w-full bg-surface-container-lowest border border-border-subtle rounded-DEFAULT px-3 py-2 font-body-sm text-body-sm focus:ring-2 focus:ring-secondary-fixed focus:border-secondary-fixed appearance-none">
+<option>Last 30 Days</option>
+<option>This Quarter</option>
+<option>Year to Date</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-on-surface-variant pointer-events-none">calendar_today</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface-variant">Clinic Location</label>
+<div class="relative">
+<select class="w-full bg-surface-container-lowest border border-border-subtle rounded-DEFAULT px-3 py-2 font-body-sm text-body-sm focus:ring-2 focus:ring-secondary-fixed focus:border-secondary-fixed appearance-none">
+<option>All Locations</option>
+<option>Main Campus</option>
+<option>North Clinic</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-on-surface-variant pointer-events-none">location_on</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface-variant">Campaign</label>
+<div class="relative">
+<select class="w-full bg-surface-container-lowest border border-border-subtle rounded-DEFAULT px-3 py-2 font-body-sm text-body-sm focus:ring-2 focus:ring-secondary-fixed focus:border-secondary-fixed appearance-none">
+<option>All Campaigns</option>
+<option>Spine Health Q3</option>
+<option>Brain Wellness 2024</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-on-surface-variant pointer-events-none">campaign</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Reports List -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<!-- Report Card 1 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg flex flex-col hover:border-secondary-fixed transition-colors group">
+<div class="h-32 bg-surface-container flex items-center justify-center rounded-t-lg border-b border-border-subtle relative overflow-hidden">
+<span class="material-symbols-outlined text-display-lg text-primary-container opacity-20">bar_chart</span>
+<!-- Example of subtle chart abstraction -->
+<div class="absolute bottom-0 left-0 w-full h-1/2 flex items-end px-4 gap-1 opacity-50">
+<div class="w-1/6 bg-secondary-container h-1/3"></div>
+<div class="w-1/6 bg-primary-container h-2/3"></div>
+<div class="w-1/6 bg-secondary-container h-1/2"></div>
+<div class="w-1/6 bg-primary-container h-full"></div>
+<div class="w-1/6 bg-secondary-container h-3/4"></div>
+<div class="w-1/6 bg-primary-container h-1/4"></div>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-2 flex-grow">
+<h3 class="font-headline-sm text-headline-sm text-primary">Executive Summary</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">High-level overview of patient acquisition, marketing spend, and overall ROI across all MSBI clinics.</p>
+</div>
+<div class="p-4 border-t border-border-subtle flex justify-between items-center bg-surface-muted rounded-b-lg">
+<span class="font-label-md text-label-md text-on-surface-variant">Generated: Today</span>
+<button class="text-primary hover:text-secondary-fixed transition-colors">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+<!-- Report Card 2 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg flex flex-col hover:border-secondary-fixed transition-colors group">
+<div class="h-32 bg-surface-container flex items-center justify-center rounded-t-lg border-b border-border-subtle relative overflow-hidden">
+<span class="material-symbols-outlined text-display-lg text-primary-container opacity-20">pie_chart</span>
+<div class="absolute w-20 h-20 rounded-full border-4 border-primary-container opacity-50 border-t-secondary-container"></div>
+</div>
+<div class="p-4 flex flex-col gap-2 flex-grow">
+<h3 class="font-headline-sm text-headline-sm text-primary">Campaign Performance</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Detailed breakdown of individual campaign metrics, including CTR, conversion rates, and cost per acquisition.</p>
+</div>
+<div class="p-4 border-t border-border-subtle flex justify-between items-center bg-surface-muted rounded-b-lg">
+<span class="font-label-md text-label-md text-on-surface-variant">Generated: Yesterday</span>
+<button class="text-primary hover:text-secondary-fixed transition-colors">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+<!-- Report Card 3 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg flex flex-col hover:border-secondary-fixed transition-colors group">
+<div class="h-32 bg-surface-container flex items-center justify-center rounded-t-lg border-b border-border-subtle relative overflow-hidden">
+<span class="material-symbols-outlined text-display-lg text-primary-container opacity-20">table_chart</span>
+<div class="absolute inset-4 grid grid-cols-4 grid-rows-3 gap-1 opacity-30">
+<div class="bg-primary-container col-span-4 rounded-sm"></div>
+<div class="bg-secondary-container rounded-sm"></div>
+<div class="bg-secondary-container rounded-sm"></div>
+<div class="bg-secondary-container rounded-sm"></div>
+<div class="bg-secondary-container rounded-sm"></div>
+<div class="bg-secondary-container rounded-sm"></div>
+<div class="bg-secondary-container rounded-sm"></div>
+<div class="bg-secondary-container rounded-sm"></div>
+<div class="bg-secondary-container rounded-sm"></div>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-2 flex-grow">
+<h3 class="font-headline-sm text-headline-sm text-primary">Patient Demographics</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Analysis of patient demographics engaging with marketing materials, segmented by clinic location.</p>
+</div>
+<div class="p-4 border-t border-border-subtle flex justify-between items-center bg-surface-muted rounded-b-lg">
+<span class="font-label-md text-label-md text-on-surface-variant">Generated: 2 days ago</span>
+<button class="text-primary hover:text-secondary-fixed transition-colors">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Quick Export Actions (Mobile Optimized) -->
+<section class="mt-4 bg-surface-container-lowest border border-border-subtle rounded-lg p-margin-sm md:p-margin-md flex flex-col gap-4">
+<h2 class="font-headline-sm text-headline-sm text-primary border-b border-border-subtle pb-2">Export &amp; Schedule</h2>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<button class="flex items-center justify-center gap-2 bg-primary-container text-on-primary font-body-sm text-body-sm py-3 px-4 rounded-DEFAULT hover:bg-primary transition-colors">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+                    Export PDF
+                </button>
+<button class="flex items-center justify-center gap-2 border border-primary-container text-primary-container bg-surface-container-lowest font-body-sm text-body-sm py-3 px-4 rounded-DEFAULT hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">table_view</span>
+                    Export Excel
+                </button>
+<button class="flex items-center justify-center gap-2 border border-border-subtle text-on-surface-variant bg-surface-muted font-body-sm text-body-sm py-3 px-4 rounded-DEFAULT hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">schedule</span>
+                    Schedule Report
+                </button>
+</div>
+</section>
+</main>
+<!-- Mobile BottomNavBar (from JSON) -->
+<nav class="bg-surface-container-lowest dark:bg-inverse-surface text-primary dark:text-primary-fixed font-label-md text-label-md fixed bottom-0 w-full z-50 md:hidden border-t border-border-subtle shadow-lg flex justify-around items-center h-16 px-4">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container active:scale-90 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container active:scale-90 transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container active:scale-90 transition-all" href="#">
+<span class="material-symbols-outlined">campaign</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container active:scale-90 transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+</a>
+</nav>
+</body></html>
