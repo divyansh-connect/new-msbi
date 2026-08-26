@@ -90,6 +90,7 @@ export const RBACProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const hasPermission = (role: UserRole, permissionKey: string): boolean => {
+    if (role === 'Admin') return true;
     return permissionsMatrix[role]?.[permissionKey] ?? false;
   };
 

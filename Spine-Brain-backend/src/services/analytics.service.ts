@@ -316,42 +316,29 @@ export class AnalyticsService {
       };
     }
 
-    try {
-      const startDate = query.startDate || '30daysAgo';
-      const endDate = query.endDate || 'today';
+    const startDate = query.startDate || '30daysAgo';
+    const endDate = query.endDate || 'today';
 
-      // 1. Get GA4 Overview data
-      const ga4Data = await ga4Service.getOverview(startDate, endDate);
+    // 1. Get GA4 Overview data
+    const ga4Data = await ga4Service.getOverview(startDate, endDate);
 
-      // 2. Get GA4 Landing Pages report
-      const landingPages = await ga4Service.getLandingPagesReport(startDate, endDate);
+    // 2. Get GA4 Landing Pages report
+    const landingPages = await ga4Service.getLandingPagesReport(startDate, endDate);
 
-      // 3. Return mapped structure matching frontend expectations exactly
-      return {
-        connected: true,
-        data: {
-          overview: {
-            sessions: ga4Data?.sessions || 0,
-            screenPageViews: ga4Data?.screenPageViews || 0,
-            activeUsers: ga4Data?.activeUsers || 0,
-            engagedSessions: ga4Data?.engagedSessions || 0
-          },
-          landingPages: landingPages || [],
-          searchConsole: [] // Leave empty or return GSC data if available
-        }
-      };
-    } catch (error: any) {
-      console.error('[ANALYTICS SERVICE WEBSITE ANALYTICS ERROR]:', error);
-      return {
-        connected: true,
-        error: `Failed to fetch GA4 data: ${error.message || error}`,
-        data: {
-          overview: { sessions: 0, screenPageViews: 0, activeUsers: 0, engagedSessions: 0 },
-          landingPages: [],
-          searchConsole: []
-        }
-      };
-    }
+    // 3. Return mapped structure matching frontend expectations exactly
+    return {
+      connected: true,
+      data: {
+        overview: {
+          sessions: ga4Data?.sessions || 0,
+          screenPageViews: ga4Data?.screenPageViews || 0,
+          activeUsers: ga4Data?.activeUsers || 0,
+          engagedSessions: ga4Data?.engagedSessions || 0
+        },
+        landingPages: landingPages || [],
+        searchConsole: [] // Leave empty or return GSC data if available
+      }
+    };
   }
   
   async getCallsAnalytics(query: AnalyticsQuery) {

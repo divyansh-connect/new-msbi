@@ -40,10 +40,11 @@ export const ReputationManagement: React.FC = () => {
           verified: r.isVerified ?? true,
           rating: r.rating,
           date: r.date,
-          location: r.platform,
+          location: r.clinic?.name || r.platform,
           text: r.comment,
           replied: !!r.reply,
-          replyText: r.reply || ''
+          replyText: r.reply || '',
+          reviewUrl: r.reviewUrl || ''
         };
       }) as ReviewItem[];
     }
@@ -117,16 +118,29 @@ export const ReputationManagement: React.FC = () => {
   const [isSendingRequest, setIsSendingRequest] = useState(false);
   const { showSuccess, showError } = useToast();
 
+  const [isSubmittingReply, setIsSubmittingReply] = useState(false);
   const activeSubViewKey = subview || 'reviews';
   const meta = subViewTitles[activeSubViewKey] || subViewTitles['reviews'];
 
-  const handleSendReply = (e: React.FormEvent) => {
+  const handleSendReply = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedReview || !replyInput) return;
-    selectedReview.replied = true;
-    selectedReview.replyText = replyInput;
-    setSelectedReview(null);
-    setReplyInput('');
+    if (!selectedReview || !replyInput || isSubmittingReply) return;
+    setIsSubmittingReply(true);
+    try {
+      await apiClient(`/reputation/reviews/${selectedReview.id}/reply`, {
+        method: 'POST',
+        body: JSON.stringify({ reply: replyInput })
+      });
+      showSuccess('Reply published to Google Business Profile successfully');
+      queryClient.invalidateQueries({ queryKey: ['reviews'] });
+      setSelectedReview(null);
+      setReplyInput('');
+    } catch (err: any) {
+      console.error(err);
+      showError('Failed to publish reply: ' + err.message);
+    } finally {
+      setIsSubmittingReply(false);
+    }
   };
 
   return (
@@ -334,8 +348,13 @@ export const ReputationManagement: React.FC = () => {
                 </div>
               ) : (
                 <div className="pt-2 flex justify-end">
-                  {/* Google Reviews V1 is read-only. Reply button hidden. */}
-                  <span className="text-[10px] text-on-surface-variant">Response not supported in V1. Use GBP dashboard.</span>
+                  <button 
+                    onClick={() => { setSelectedReview(rev); setReplyInput(''); }}
+                    className="btn-outline px-3 py-1.5 rounded-xl font-bold cursor-pointer text-xs flex items-center gap-1.5 hover:bg-surface-container"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">reply</span>
+                    Reply
+                  </button>
                 </div>
               )}
             </div>
@@ -422,7 +441,7 @@ export const ReputationManagement: React.FC = () => {
             </div>
 
             <form onSubmit={handleSendReply} className="space-y-4">
-              <textarea
+             <textarea
                 rows={4}
                 required
                 value={replyInput}
@@ -441,15 +460,15 @@ export const ReputationManagement: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="btn-primary-vibrant px-4 py-2 rounded-xl text-xs font-bold cursor-pointer"
+                  disabled={isSubmittingReply}
+                  className="btn-primary-vibrant px-4 py-2 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50"
                 >
-                  Publish Reply
+                  {isSubmittingReply ? 'Publishing...' : 'Publish Reply'}
                 </button>
               </div>
             </form>
           </div>
-        </div>
-      ,
+        </div>,
         document.body
       )}
     </div>

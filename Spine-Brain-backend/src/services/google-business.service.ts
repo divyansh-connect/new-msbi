@@ -31,6 +31,19 @@ export class GoogleBusinessService {
     }
   }
 
+  private handleApiError(error: any, context: string): never {
+    const endpoint = error.config?.url || 'unknown endpoint';
+    const status = error.response?.status || error.response?.data?.error?.status || 'unknown status';
+    const apiError = error.response?.data?.error;
+    let message = apiError?.message || error.message || 'Request failed';
+
+    console.error(`Google Business Profile API Failure during ${context} at endpoint ${endpoint} (Status ${status}):`, error.response?.data || error.message);
+    
+    throw new Error(
+      `Google Business Profile API Error: Status ${status} on endpoint ${endpoint} - ${message}`
+    );
+  }
+
   async healthCheck(): Promise<boolean> {
     try {
       const client = await this.getClient();
@@ -68,11 +81,7 @@ export class GoogleBusinessService {
         type: acc.type
       }));
     } catch (error: any) {
-      console.error('Failed to fetch GBP accounts:', error.response?.data || error.message);
-      if (error.response?.data?.error) {
-        throw new Error(`Google API Error: ${error.response.data.error.message}`);
-      }
-      throw error;
+      this.handleApiError(error, 'getAccessibleAccounts');
     }
   }
 
@@ -116,11 +125,7 @@ export class GoogleBusinessService {
         };
       });
     } catch (error: any) {
-      console.error(`Failed to fetch GBP locations for account ${accountId}:`, error.response?.data || error.message);
-      if (error.response?.data?.error) {
-        throw new Error(`Google API Error: ${error.response.data.error.message}`);
-      }
-      throw error;
+      this.handleApiError(error, 'getAccessibleLocations');
     }
   }
 
@@ -214,7 +219,21 @@ export class GoogleBusinessService {
           syncedCount++;
         }
       } catch (err: any) {
-        console.error(`[GBP SYNC] Failed to sync reviews for location ${googleLocationId}:`, err.response?.data || err.message);
+        const endpoint = err.config?.url || 'unknown endpoint';
+        const status = err.response?.status || err.response?.data?.error?.status || 'unknown status';
+        const apiError = err.response?.data?.error;
+        const message = apiError?.message || err.message || 'Request failed';
+        const errorString = `Google Business Profile API Error: Status ${status} on endpoint ${endpoint} - ${message}`;
+
+        await prisma.integrationCredential.updateMany({
+          where: { platformName: 'google-business' },
+          data: {
+            lastSyncAt: new Date(),
+            lastError: errorString
+          }
+        });
+
+        this.handleApiError(err, `syncReviews (Location: ${googleLocationId})`);
       }
     }
 
@@ -275,11 +294,7 @@ export class GoogleBusinessService {
 
       return { success: true, reply: replyText, repliedAt };
     } catch (error: any) {
-      console.error('Failed to post reply to Google Business Profile API:', error.response?.data || error.message);
-      if (error.response?.data?.error) {
-        throw new Error(`Google API Error: ${error.response.data.error.message}`);
-      }
-      throw error;
+      this.handleApiError(error, 'replyToReview');
     }
   }
 
@@ -305,9 +320,14 @@ export class GoogleBusinessService {
     if (!accessToken) throw new Error('Google Business Profile not connected');
 
     const url = `https://mybusiness.googleapis.com/v4/${reviewName}`;
-    const response = await axios.get(url, {
-      headers: { 'Authorization': `Bearer ${accessToken}` }
-    });
+    let response;
+    try {
+      response = await axios.get(url, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+    } catch (error: any) {
+      this.handleApiError(error, 'fetchAndSaveSingleReview');
+    }
 
     const rev = response.data;
     const externalReviewId = rev.reviewId;

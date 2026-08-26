@@ -99,7 +99,14 @@ export function verifyJwtToken(token: string): TokenPayload {
  * 5. Attaches authoritative user data & sessionId to request.user
  */
 export const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
-  const authHeader = request.headers.authorization;
+  let authHeader = request.headers.authorization;
+
+  if (!authHeader && request.query && typeof request.query === 'object') {
+    const query = request.query as any;
+    if (query.token && typeof query.token === 'string') {
+      authHeader = `Bearer ${query.token}`;
+    }
+  }
 
   if (!authHeader || typeof authHeader !== 'string') {
     return reply.status(401).send({

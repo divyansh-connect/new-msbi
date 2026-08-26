@@ -6,16 +6,24 @@ export const getAnalyticsOverviewHandler = async (
   request: FastifyRequest<{ Querystring: AnalyticsQuery }>,
   reply: FastifyReply
 ) => {
-  const data = await analyticsService.getOverview(request.query);
-  return reply.send({ success: true, data });
+  try {
+    const data = await analyticsService.getOverview(request.query);
+    return reply.send({ success: true, data });
+  } catch (error: any) {
+    return reply.status(400).send({ success: false, error: error.message || 'Failed to fetch analytics overview' });
+  }
 };
 
 export const getWebsiteAnalyticsHandler = async (
   request: FastifyRequest<{ Querystring: AnalyticsQuery }>,
   reply: FastifyReply
 ) => {
-  const data = await analyticsService.getWebsiteAnalytics(request.query);
-  return reply.send({ success: true, data });
+  try {
+    const data = await analyticsService.getWebsiteAnalytics(request.query);
+    return reply.send({ success: true, data });
+  } catch (error: any) {
+    return reply.status(400).send({ success: false, error: error.message || 'Failed to fetch website analytics' });
+  }
 };
 
 
@@ -72,6 +80,10 @@ export const getTimeSeriesHandler = async (
   request: FastifyRequest<{ Querystring: AnalyticsQuery }>,
   reply: FastifyReply
 ) => {
-  const data = await analyticsService.getTimeSeries(request.query);
-  return reply.send({ success: true, data });
+  try {
+    const data = await analyticsService.getTimeSeries(request.query);
+    return reply.send({ success: true, data });
+  } catch (error: any) {
+    return reply.status(400).send({ success: false, error: error.message || 'Failed to fetch time series' });
+  }
 };

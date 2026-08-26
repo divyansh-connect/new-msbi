@@ -108,6 +108,9 @@ export class GoogleAdsService {
   }
 
   private handleApiError(error: any, context: string): never {
+    const endpoint = error.config?.url || 'unknown endpoint';
+    const status = error.response?.status || error.response?.data?.error?.status || 'unknown status';
+
     if (error.response?.data?.error) {
       const apiError = error.response.data.error;
       let detailedMessage = apiError.message || 'Request failed';
@@ -125,12 +128,12 @@ export class GoogleAdsService {
         }
       }
       
-      console.error(`Google Ads API Failure during ${context}:`, error.response.data);
-      throw new Error(`Google Ads API (${apiError.status || 'Error'}): ${detailedMessage}`);
+      console.error(`Google Ads API Failure during ${context} at endpoint ${endpoint} (Status ${status}):`, error.response.data);
+      throw new Error(`Google Ads API Error: Status ${status} on endpoint ${endpoint} - ${detailedMessage}`);
     }
     
-    console.error(`Google Ads connection error during ${context}:`, error.message || error);
-    throw new Error(`Google Ads connection failed: ${error.message || error}`);
+    console.error(`Google Ads connection error during ${context} at endpoint ${endpoint}:`, error.message || error);
+    throw new Error(`Google Ads connection failed: Status ${status} on endpoint ${endpoint} - ${error.message || error}`);
   }
 
   async healthCheck(): Promise<boolean> {

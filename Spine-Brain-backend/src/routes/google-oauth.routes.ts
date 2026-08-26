@@ -63,10 +63,10 @@ export default async function googleOAuthRoutes(fastify: FastifyInstance) {
       
       if (tokens.access_token) {
         const config = { expiryDate: tokens.expiry_date };
-        await integrationsService.saveCredentials('ga4', tokens.access_token, tokens.refresh_token || null, config);
-        await integrationsService.saveCredentials('gsc', tokens.access_token, tokens.refresh_token || null, config);
-        await integrationsService.saveCredentials('google-ads', tokens.access_token, tokens.refresh_token || null, config);
-        await integrationsService.saveCredentials('google-business', tokens.access_token, tokens.refresh_token || null, config);
+        await integrationsService.saveCredentials('ga4', tokens.access_token, tokens.refresh_token || null, config, undefined, false);
+        await integrationsService.saveCredentials('gsc', tokens.access_token, tokens.refresh_token || null, config, undefined, false);
+        await integrationsService.saveCredentials('google-ads', tokens.access_token, tokens.refresh_token || null, config, undefined, false);
+        await integrationsService.saveCredentials('google-business', tokens.access_token, tokens.refresh_token || null, config, undefined, false);
         
         return reply.redirect(`${redirectOrigin}/integrations?subview=${subview}&connected=true`);
       } else {

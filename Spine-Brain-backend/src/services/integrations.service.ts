@@ -123,7 +123,7 @@ export class IntegrationsService {
   /**
    * Internal method to safely save credentials
    */
-  async saveCredentials(platformName: string, accessToken: string | null, refreshToken?: string | null, apiKeyOrConfig?: string | any, config?: any) {
+  async saveCredentials(platformName: string, accessToken: string | null, refreshToken?: string | null, apiKeyOrConfig?: string | any, config?: any, resetConfig = false) {
     let apiKey: string | null = null;
     let actualConfig: any = null;
 
@@ -152,7 +152,7 @@ export class IntegrationsService {
       finalRefreshToken = decryptCredential(existing.refreshToken);
     }
     
-    if (existing?.config) {
+    if (existing?.config && !resetConfig) {
       finalConfig = {
         ...(existing.config as any),
         ...actualConfig

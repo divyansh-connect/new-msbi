@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../api/client';
+import { useToast } from '../context/ToastContext';
 
 const subViewTitles: Record<string, { title: string; subtitle: string }> = {
   'organization': { title: 'Practice Organization Profile', subtitle: 'Practice identity, main medical campus details, and business settings.' },
@@ -11,6 +12,110 @@ const subViewTitles: Record<string, { title: string; subtitle: string }> = {
   'notifications': { title: 'System Notification Preferences', subtitle: 'SMS lead alerts, contract expiration warnings, and weekly email digests.' },
   'security': { title: 'Two-Factor Authentication (MFA) & Security', subtitle: 'TOTP Authenticator app integration, backup recovery codes, and session protection.' },
   'api-keys': { title: 'Master Enterprise API Keys & Webhooks', subtitle: 'Master REST API keys, webhook signing secrets, and developer integration.' },
+};
+
+const StaffAlertRow: React.FC<{
+  user: any;
+  locations: any[];
+  onSave: (userId: string, phoneNumber: string | null, emailAlerts: boolean, smsAlerts: boolean, alertLocations: string[]) => Promise<void>;
+  isSaving: boolean;
+}> = ({ user, locations, onSave, isSaving }) => {
+  const [phone, setPhone] = useState(user.phoneNumber || '');
+  const [emailAlerts, setEmailAlerts] = useState(user.emailAlerts || false);
+  const [smsAlerts, setSmsAlerts] = useState(user.smsAlerts || false);
+  
+  let parsedLocations: string[] = [];
+  if (user.alertLocations) {
+    try {
+      parsedLocations = typeof user.alertLocations === 'string'
+        ? JSON.parse(user.alertLocations)
+        : (Array.isArray(user.alertLocations) ? user.alertLocations : []);
+    } catch (e) {
+      parsedLocations = [];
+    }
+  }
+  const [selectedLocs, setSelectedLocs] = useState<string[]>(parsedLocations);
+
+  const handleLocToggle = (locId: string) => {
+    setSelectedLocs(prev =>
+      prev.includes(locId) ? prev.filter(id => id !== locId) : [...prev, locId]
+    );
+  };
+
+  return (
+    <div className="p-4 border border-border-subtle rounded-xl bg-surface-muted space-y-3">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+        <div>
+          <span className="font-bold text-primary text-xs sm:text-sm">{user.firstName} {user.lastName}</span>
+          <p className="text-[10px] text-on-surface-variant">{user.email} • Role: {user.roleName}</p>
+        </div>
+        <button
+          onClick={() => onSave(user.id, phone || null, emailAlerts, smsAlerts, selectedLocs)}
+          disabled={isSaving}
+          className="btn-primary-vibrant px-3 py-1.5 rounded-xl font-bold text-[10px] disabled:opacity-50 self-end sm:self-auto cursor-pointer"
+        >
+          {isSaving ? 'Saving...' : 'Save Settings'}
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-border-subtle text-[11px]">
+        <div className="space-y-1">
+          <label className="block font-bold text-on-surface-variant uppercase text-[9px]">Mobile Phone</label>
+          <input
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="e.g. +16125550199"
+            className="w-full border border-border-subtle rounded-xl px-2.5 py-1.5 bg-surface-container-lowest text-on-surface text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+
+        <div className="space-y-2 flex flex-col justify-center">
+          <label className="flex items-center gap-2 cursor-pointer font-bold text-on-surface text-xs">
+            <input
+              type="checkbox"
+              checked={emailAlerts}
+              onChange={(e) => setEmailAlerts(e.target.checked)}
+              className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer"
+            />
+            Email Review Alerts
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer font-bold text-on-surface text-xs">
+            <input
+              type="checkbox"
+              checked={smsAlerts}
+              onChange={(e) => setSmsAlerts(e.target.checked)}
+              className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer"
+            />
+            SMS Review Alerts
+          </label>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="block font-bold text-on-surface-variant uppercase text-[9px]">Location Filters</label>
+          {locations.length === 0 ? (
+            <p className="text-[10px] text-on-surface-variant italic">No mapped Google locations configured.</p>
+          ) : (
+            <div className="max-h-24 overflow-y-auto space-y-1 p-1 bg-surface-container-lowest border border-border-subtle rounded-xl">
+              {locations.map(loc => (
+                <label key={loc.id} className="flex items-center gap-1.5 cursor-pointer text-[10px] text-on-surface">
+                  <input
+                    type="checkbox"
+                    checked={selectedLocs.includes(loc.googleLocationId)}
+                    disabled={!loc.googleLocationId}
+                    onChange={() => loc.googleLocationId && handleLocToggle(loc.googleLocationId)}
+                    className="rounded text-primary focus:ring-primary h-3 w-3 cursor-pointer"
+                  />
+                  <span className="truncate">{loc.name}</span>
+                </label>
+              ))}
+            </div>
+          )}
+          <span className="text-[9px] text-on-surface-variant italic block">(If none selected, receives alerts for all locations)</span>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export const Settings: React.FC = () => {
@@ -40,6 +145,47 @@ export const Settings: React.FC = () => {
   const [regenCode, setRegenCode] = useState<string>('');
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
   const [regenError, setRegenError] = useState<string | null>(null);
+
+  const { showSuccess, showError } = useToast();
+  const [savingUserId, setSavingUserId] = useState<string | null>(null);
+
+  const { data: users = [], refetch: refetchUsers } = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const res = await apiClient<{ success: boolean; data: any[] }>('/users');
+      return res.data;
+    }
+  });
+
+  const { data: mappings = [] } = useQuery({
+    queryKey: ['mappings'],
+    queryFn: async () => {
+      const res = await apiClient<{ success: boolean; data: any[] }>('/reputation/mappings');
+      return res.data;
+    }
+  });
+
+  const handleSaveNotifications = async (userId: string, phoneNumber: string | null, emailAlerts: boolean, smsAlerts: boolean, alertLocations: string[]) => {
+    setSavingUserId(userId);
+    try {
+      await apiClient(`/users/${userId}/notifications`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          phoneNumber,
+          emailAlerts,
+          smsAlerts,
+          alertLocations
+        })
+      });
+      showSuccess('Alert preferences updated successfully');
+      refetchUsers();
+    } catch (err: any) {
+      console.error(err);
+      showError('Failed to save alert preferences: ' + err.message);
+    } finally {
+      setSavingUserId(null);
+    }
+  };
 
   const activeSubViewKey = subview || 'organization';
   const meta = subViewTitles[activeSubViewKey] || subViewTitles['organization'];
@@ -266,24 +412,29 @@ export const Settings: React.FC = () => {
         </div>
       ) : activeSubViewKey === 'notifications' ? (
         /* Notification Preferences View */
-        <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
+        <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
           <h2 className="font-headline-sm text-sm sm:text-base font-bold text-primary border-b border-border-subtle pb-3">
             System Notification Preferences
           </h2>
-          <div className="space-y-3 text-xs">
-            {[
-              { title: 'Inbound Patient Lead SMS Alert', desc: 'Instant text when new high-value consult form arrives' },
-              { title: 'Vendor Contract Expiration Warning', desc: 'Email alert 30 days prior to renewal date' },
-              { title: 'Weekly Performance Digest', desc: 'Automated executive ROI summary email every Monday' },
-            ].map((n, i) => (
-              <div key={i} className="flex justify-between items-center p-3 border border-border-subtle rounded-xl">
-                <div>
-                  <p className="font-bold text-primary text-xs sm:text-sm">{n.title}</p>
-                  <p className="text-[11px] text-on-surface-variant">{n.desc}</p>
-                </div>
-                <input type="checkbox" defaultChecked className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer shrink-0 ml-2" />
+          
+          <div className="space-y-4">
+            {users.length === 0 ? (
+              <div className="p-4 border border-border-subtle rounded-xl text-center bg-surface-muted">
+                <p className="text-xs text-on-surface-variant italic">No system users found.</p>
               </div>
-            ))}
+            ) : (
+              <div className="space-y-4">
+                {users.map((user: any) => (
+                  <StaffAlertRow
+                    key={user.id}
+                    user={user}
+                    locations={mappings}
+                    onSave={handleSaveNotifications}
+                    isSaving={savingUserId === user.id}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       ) : activeSubViewKey === 'api-keys' ? (
