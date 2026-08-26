@@ -40,3 +40,6 @@ pnpm-debug.log*
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Exclude backend project directory (tracked in its own repository)
+/Spine-Brain-backend/
