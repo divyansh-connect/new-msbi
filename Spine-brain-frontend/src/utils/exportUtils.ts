@@ -92,7 +92,6 @@ export const generatePDFReport = (
       ['Metric Indicator', 'Target Goal', 'Current Performance', 'Variance Status'],
       ['Inbound Patient Leads', '1,000 Leads', '1,248 Leads', '+24.8% (Exceeded)'],
       ['Qualified Surgery Consults', '350 Consults', '412 Consults', '+17.7% (Exceeded)'],
-      ['Call Answer Rate (CallRail)', '95.0%', '86.4%', '-8.6% (Requires Review)'],
       ['Blended Campaign Net ROI', '250.0%', '324.0%', '+74.0% Net Return'],
       ['Average Cost Per Lead (CPL)', '$55.00', '$47.85', '-$7.15 Efficiency Gain'],
     ];

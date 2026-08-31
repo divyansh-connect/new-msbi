@@ -285,12 +285,8 @@ export const CampaignManagement: React.FC = () => {
           <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 space-y-3 shadow-sm text-left">
             <h3 className="font-bold text-sm text-primary border-b border-border-subtle pb-2 flex justify-between">
               <span>In Progress</span>
-              <span className="bg-primary-container text-on-primary-container px-2 py-0.5 rounded text-xs font-bold">1</span>
+              <span className="bg-primary-container text-on-primary-container px-2 py-0.5 rounded text-xs font-bold">0</span>
             </h3>
-            <div className="p-3 bg-surface-muted border border-border-subtle rounded-xl text-xs space-y-1 text-left">
-              <p className="font-bold text-primary">CallRail Telephony Routing Test</p>
-              <p className="text-on-surface-variant text-[11px]">Assigned to: Clinic Admin</p>
-            </div>
           </div>
 
           <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 space-y-3 shadow-sm text-left">

@@ -118,7 +118,6 @@ export const navStructure: MenuItem[] = [
       { label: 'Meta Ads', path: '/integrations/meta-ads' },
       { label: 'Google Search Console', path: '/integrations/gsc' },
       { label: 'Looker Studio', path: '/integrations/looker' },
-      { label: 'CallRail', path: '/integrations/callrail' },
       { label: 'HubSpot', path: '/integrations/hubspot' },
       { label: 'Mailchimp', path: '/integrations/mailchimp' },
       { label: 'Google Business Profile', path: '/integrations/gbp' },

@@ -25,7 +25,6 @@ const subViewTitles: Record<string, { title: string; subtitle: string }> = {
   'overview': { title: 'Marketing Analytics Overview', subtitle: 'Executive summary of lead acquisition, ROI, and call conversion performance.' },
   'website': { title: 'Website Traffic & GA4 Analytics', subtitle: 'Visitor sessions, pageviews, bounce rate & top landing page performance.' },
   'leads': { title: 'Lead Qualification & Conversion Analytics', subtitle: 'Lead volume, qualification rate, and stage-by-stage funnel performance.' },
-  'call-tracking': { title: 'CallRail Telephony & Inbound Call Logs', subtitle: 'Live telephony recordings, missed call tracking & call duration metrics.' },
   'form-submissions': { title: 'Inbound Patient Form Submissions', subtitle: 'Contact form fills, appointment pre-evaluations, and consultation inquiries.' },
   'campaigns': { title: 'Campaign Channel Performance Comparison', subtitle: 'Cost-per-lead and revenue return across Google Ads, Meta, and SEO.' },
   'roi': { title: 'ROI Analytics & Net Financial Return', subtitle: 'Blended ROI calculations, total ad spend, and attributed lifetime value.' },
@@ -35,20 +34,11 @@ const subViewTitles: Record<string, { title: string; subtitle: string }> = {
 
 export const MarketingAnalytics: React.FC = () => {
   const { subview } = useParams<{ subview?: string }>();
-  const [selectedCallAudio, setSelectedCallAudio] = useState<string | null>(null);
   const { showSuccess, showError } = useToast();
-  const [isSyncingCallRail, setIsSyncingCallRail] = useState(false);
-
   const activeSubViewKey = subview || 'overview';
   const meta = subViewTitles[activeSubViewKey] || subViewTitles['overview'];
 
-  const { data: callLogs } = useQuery({
-    queryKey: ['callLogs'],
-    queryFn: async () => {
-      const res = await apiClient<{ success: boolean; data: any[] }>('/calls');
-      return res.data;
-    }
-  });
+
   const { data: formSubmissions } = useQuery({
     queryKey: ['formSubmissions'],
     queryFn: async () => {
@@ -358,116 +348,6 @@ export const MarketingAnalytics: React.FC = () => {
             </div>
           </div>
         </div>
-      ) : activeSubViewKey === 'call-tracking' ? (
-        /* CallRail Call Log View */
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 bg-surface-container-lowest p-4 rounded-2xl border border-border-subtle shadow-sm">
-            <div>
-              <h2 className="font-headline-sm text-sm sm:text-base font-bold text-primary">CallRail Telephony Log</h2>
-              <p className="text-xs text-on-surface-variant">Real-time call recordings & missed call tracking </p>
-            </div>
-            <div className="flex items-center gap-2 self-start sm:self-auto">
-              <span className="bg-status-success/20 text-status-success font-bold text-[11px] px-3 py-1 rounded-full">
-                CallRail Demo Bridge Active
-              </span>
-              <button
-                onClick={async () => {
-                  if (isSyncingCallRail) return;
-                  setIsSyncingCallRail(true);
-                  try {
-                    await apiClient('/integrations/callrail/sync', { method: 'POST' });
-                    showSuccess('CallRail Data Synced successfully.');
-                  } catch (err: any) {
-                    showError('CallRail Sync failed: ' + err.message);
-                  } finally {
-                    setIsSyncingCallRail(false);
-                  }
-                }}
-                disabled={isSyncingCallRail}
-                className="px-3 py-1 border border-border-subtle rounded-xl text-[11px] font-bold hover:bg-surface-container cursor-pointer whitespace-nowrap disabled:opacity-50"
-              >
-                {isSyncingCallRail ? 'Syncing...' : 'Sync CallRail Data'}
-              </button>
-            </div>
-          </div>
-
-          {selectedCallAudio && (
-            <div className="p-4 bg-primary text-white rounded-2xl shadow-lg flex justify-between items-center animate-in fade-in duration-200">
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-xl sm:text-2xl">play_circle</span>
-                <div>
-                  <p className="font-bold text-xs">Playing Audio Recording: {selectedCallAudio}</p>
-                  <p className="text-[11px] opacity-90">Encrypted HIPAA Telephony Stream (Demo Audio)</p>
-                </div>
-              </div>
-              <button onClick={() => setSelectedCallAudio(null)} className="text-white hover:opacity-80 cursor-pointer">
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-          )}
-
-          <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl shadow-sm overflow-hidden">
-            {/* Scrollable Table Wrapper */}
-            <div className="overflow-x-auto w-full no-scrollbar">
-              <table className="w-full text-left text-xs min-w-[650px]">
-                <thead className="bg-surface-muted text-on-surface-variant font-label-md uppercase border-b border-border-subtle">
-                  <tr>
-                    <th className="py-3 px-3 sm:px-4 whitespace-nowrap">Caller</th>
-                    <th className="py-3 px-3 sm:px-4 whitespace-nowrap">Phone Number</th>
-                    <th className="py-3 px-3 sm:px-4 whitespace-nowrap">Duration</th>
-                    <th className="py-3 px-3 sm:px-4 whitespace-nowrap">Time</th>
-                    <th className="py-3 px-3 sm:px-4 whitespace-nowrap">Campaign Source</th>
-                    <th className="py-3 px-3 sm:px-4 whitespace-nowrap">Status</th>
-                    <th className="py-3 px-3 sm:px-4 whitespace-nowrap">Audio Playback</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-subtle">
-                  {(callLogs || []).map((call) => (
-                    <tr key={call.id} className="hover:bg-surface-muted transition-colors">
-                      <td className="py-3 px-3 sm:px-4 font-bold text-primary whitespace-nowrap">{call.caller || 'Unknown'}</td>
-                      <td className="py-3 px-3 sm:px-4 font-data-mono whitespace-nowrap">{call.phone}</td>
-                      <td className="py-3 px-3 sm:px-4 font-data-mono whitespace-nowrap">{call.duration}</td>
-                      <td className="py-3 px-3 sm:px-4 text-on-surface-variant whitespace-nowrap">{new Date(call.timestamp).toLocaleString()}</td>
-                      <td className="py-3 px-3 sm:px-4 text-secondary font-medium whitespace-nowrap">{call.campaign || 'Direct'}</td>
-                      <td className="py-3 px-3 sm:px-4 whitespace-nowrap">
-                        <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase ${
-                          call.status === 'Answered'
-                            ? 'bg-status-success/20 text-status-success'
-                            : call.status === 'Missed'
-                            ? 'bg-status-error/20 text-status-error'
-                            : 'bg-status-warning/20 text-status-warning'
-                        }`}>
-                          {call.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 sm:px-4 whitespace-nowrap">
-                        {call.audioUrl ? (
-                          <a
-                            href={sanitizeUrl(call.audioUrl)}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="px-3 py-1 bg-surface-container hover:bg-surface-container-high text-primary font-bold rounded-lg text-[11px] flex items-center gap-1 transition-colors cursor-pointer"
-                          >
-                            <span className="material-symbols-outlined text-xs">play_arrow</span> Listen
-                          </a>
-                        ) : (
-                          <span className="text-on-surface-variant text-[10px]">No audio</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                  {callLogs?.length === 0 && (
-                    <tr>
-                      <td colSpan={7} className="py-4 text-center text-on-surface-variant text-xs">
-                        No call logs found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
       ) : activeSubViewKey === 'form-submissions' ? (
         /* Form Submissions Log */
         <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl shadow-sm p-4 sm:p-5 space-y-3">
@@ -625,7 +505,7 @@ export const MarketingAnalytics: React.FC = () => {
               <span className="font-body-sm text-xs font-semibold text-on-surface-variant">Total Calls</span>
               <div className="font-headline-md text-xl sm:text-2xl text-primary font-bold my-1">{overview?.calls?.data?.callCount || 0}</div>
               <p className="text-xs text-on-surface-variant font-bold flex items-center gap-1">
-                CallRail Volume
+                Inbound Calls
               </p>
             </div>
 
