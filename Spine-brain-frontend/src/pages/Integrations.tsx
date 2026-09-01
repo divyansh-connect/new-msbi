@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { apiClient, API_BASE_URL } from '../api/client';
 import { useToast } from '../context/ToastContext';
@@ -70,8 +70,13 @@ export const Integrations: React.FC = () => {
   const [gbpLocations, setGbpLocations] = useState<any[]>([]);
   const [clinicMappings, setClinicMappings] = useState<any[]>([]);
   const [loadingGbp, setLoadingGbp] = useState(false);
+
+  const fetchedGbpModalIdRef = useRef<string | null>(null);
+  const isFetchingGbpRef = useRef<boolean>(false);
   
   const fetchGbpConfig = async () => {
+    if (isFetchingGbpRef.current) return;
+    isFetchingGbpRef.current = true;
     setLoadingGbp(true);
     try {
       const accRes = await apiClient<{ success: boolean; data: any[] }>('/reputation/gbp/accounts');
@@ -89,9 +94,10 @@ export const Integrations: React.FC = () => {
       }
     } catch (err: any) {
       console.error('Failed to fetch GBP config:', err);
-      showError('Failed to load Google Business Profile configuration: ' + err.message);
+      showError(err.message || 'Failed to load Google Business Profile configuration');
     } finally {
       setLoadingGbp(false);
+      isFetchingGbpRef.current = false;
     }
   };
 
@@ -294,21 +300,29 @@ export const Integrations: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (activeModalConnector?.connected) {
-      if (activeModalConnector.id === 'ga4' || activeModalConnector.id === 'gsc') {
-        fetchProperties(activeModalConnector.id);
-        if (activeModalConnector.id === 'ga4') {
+    const connectorId = activeModalConnector?.id;
+    const isConnected = activeModalConnector?.connected;
+
+    if (isConnected && connectorId) {
+      if (connectorId === 'ga4' || connectorId === 'gsc') {
+        fetchProperties(connectorId);
+        if (connectorId === 'ga4') {
           setSelectedPropertyId(activeModalConnector.config?.propertyId || '');
-        } else if (activeModalConnector.id === 'gsc') {
+        } else if (connectorId === 'gsc') {
           setSelectedPropertyId(activeModalConnector.config?.siteUrl || '');
         }
-      } else if (activeModalConnector.id === 'google-ads') {
+      } else if (connectorId === 'google-ads') {
         fetchGoogleAdsConfig();
-      } else if (activeModalConnector.id === 'gbp') {
-        fetchGbpConfig();
+      } else if (connectorId === 'gbp') {
+        if (fetchedGbpModalIdRef.current !== 'gbp') {
+          fetchedGbpModalIdRef.current = 'gbp';
+          fetchGbpConfig();
+        }
       }
+    } else if (!activeModalConnector) {
+      fetchedGbpModalIdRef.current = null;
     }
-  }, [activeModalConnector]);
+  }, [activeModalConnector?.id, activeModalConnector?.connected]);
 
   const fetchProperties = async (type: string) => {
     setLoadingProperties(true);
@@ -418,9 +432,13 @@ export const Integrations: React.FC = () => {
   };
 
   const handleCloseModal = () => {
+    fetchedGbpModalIdRef.current = null;
     setActiveModalConnector(null);
     setProperties([]);
     setSelectedPropertyId('');
+    setSelectedGbpAccountId('');
+    setGbpAccounts([]);
+    setGbpLocations([]);
   };
 
   return (

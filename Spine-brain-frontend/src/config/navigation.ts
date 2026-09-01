@@ -27,7 +27,6 @@ export const navStructure: MenuItem[] = [
       { label: 'Overview', path: '/marketing-analytics/overview' },
       { label: 'Website Analytics', path: '/marketing-analytics/website' },
       { label: 'Lead Analytics', path: '/marketing-analytics/leads' },
-      { label: 'Call Tracking', path: '/marketing-analytics/call-tracking' },
       { label: 'Form Submissions', path: '/marketing-analytics/form-submissions' },
       { label: 'Campaign Performance', path: '/marketing-analytics/campaigns' },
       { label: 'ROI Analytics', path: '/marketing-analytics/roi' },
