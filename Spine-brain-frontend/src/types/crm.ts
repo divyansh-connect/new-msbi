@@ -9,7 +9,7 @@ export interface UserProfile {
 }
 
 export interface CampaignItem {
-  id: number;
+  id: string | number;
   title: string;
   owner: string;
   status: 'Active' | 'Draft' | 'Paused';
@@ -20,6 +20,14 @@ export interface CampaignItem {
   leads: number;
   startDate?: string;
   endDate?: string;
+  platform?: string;
+  externalCampaignId?: string;
+  impressions?: number;
+  clicks?: number;
+  ctr?: number;
+  cpc?: number;
+  conversions?: number;
+  conversionValue?: number;
 }
 
 export interface ReviewItem {

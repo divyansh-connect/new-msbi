@@ -37,8 +37,8 @@ export const UsersAndRoles: React.FC = () => {
         id: u.id,
         name: `${u.firstName} ${u.lastName}`,
         email: u.email,
-        role: u.role || 'Manager',
-        department: u.department || 'Executive Board',
+        role: typeof u.role === 'object' && u.role ? (u.role.name || u.roleName || 'Manager') : (u.roleName || u.role || 'Manager'),
+        department: typeof u.department === 'object' && u.department ? (u.department.name || 'Executive Board') : (u.department || 'Executive Board'),
         status: u.isActive ? 'Active' : 'Pending'
       })) as UserMember[];
     }
@@ -341,7 +341,7 @@ export const UsersAndRoles: React.FC = () => {
                         {u.role}
                       </span>
                     </td>
-                    <td className="py-3 px-3 sm:px-4 text-on-surface font-medium whitespace-nowrap">{u.department}</td>
+                    <td className="py-3 px-3 sm:px-4 text-on-surface font-medium whitespace-nowrap">{typeof u.department === 'object' ? (u.department as any)?.name || 'Executive Board' : (u.department || 'Executive Board')}</td>
                     <td className="py-3 px-3 sm:px-4 whitespace-nowrap">
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                         u.status === 'Active' ? 'bg-status-success/20 text-status-success' : 'bg-status-warning/20 text-status-warning'
@@ -505,7 +505,7 @@ export const UsersAndRoles: React.FC = () => {
                     </div>
                     <div className="col-span-2">
                       <label className="block text-[10px] font-bold uppercase text-on-surface-variant mb-1">Department</label>
-                      <p className="font-medium text-sm text-on-surface">{selectedUser.department}</p>
+                      <p className="font-medium text-sm text-on-surface">{typeof selectedUser.department === 'object' ? (selectedUser.department as any)?.name || 'Executive Board' : (selectedUser.department || 'Executive Board')}</p>
                     </div>
                   </div>
                 </div>

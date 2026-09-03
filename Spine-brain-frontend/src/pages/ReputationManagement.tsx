@@ -109,10 +109,22 @@ export const ReputationManagement: React.FC = () => {
     }
   });
 
+  const { data: rawClinics = [] } = useQuery({
+    queryKey: ['raw-clinics-list'],
+    queryFn: async () => {
+      const res = await apiClient<{ success: boolean; data: any[] }>('/reputation/clinics');
+      return res.data || [];
+    }
+  });
+
   const [selectedReview, setSelectedReview] = useState<ReviewItem | null>(null);
   const [replyInput, setReplyInput] = useState<string>('');
   const [showRequestModal, setShowRequestModal] = useState<boolean>(false);
-  const [patientPhone, setPatientPhone] = useState<string>('');
+  
+  const [patientName, setPatientName] = useState<string>('');
+  const [patientContact, setPatientContact] = useState<string>('');
+  const [selectedClinicId, setSelectedClinicId] = useState<string>('');
+  const [deliveryMethod, setDeliveryMethod] = useState<'EMAIL' | 'SMS'>('EMAIL');
 
   const [isSyncingReviews, setIsSyncingReviews] = useState(false);
   const [isSendingRequest, setIsSendingRequest] = useState(false);
@@ -376,16 +388,23 @@ export const ReputationManagement: React.FC = () => {
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
-                if (!patientPhone || isSendingRequest) return;
+                if (!patientName || !patientContact || isSendingRequest) return;
                 setIsSendingRequest(true);
                 try {
                   await apiClient('/reputation/requests', {
                     method: 'POST',
-                    body: JSON.stringify({ patientContact: patientPhone, method: 'SMS' })
+                    body: JSON.stringify({
+                      patientName,
+                      contactInfo: patientContact,
+                      method: deliveryMethod,
+                      clinicId: selectedClinicId || null
+                    })
                   });
-                  showSuccess(`Review Request link sent to: ${patientPhone}`);
+                  showSuccess(`Review Request sent to ${patientName} via ${deliveryMethod === 'EMAIL' ? 'Paubox Encrypted Email' : 'SMS'}`);
                   setShowRequestModal(false);
-                  setPatientPhone('');
+                  setPatientName('');
+                  setPatientContact('');
+                  setSelectedClinicId('');
                 } catch (err: any) {
                   showError('Failed to send request: ' + err.message);
                 } finally {
@@ -396,16 +415,62 @@ export const ReputationManagement: React.FC = () => {
             >
               <div>
                 <label className="block text-xs font-label-md uppercase text-on-surface-variant mb-1 font-bold">
-                  Patient Phone Number / Email
+                  Patient Full Name
                 </label>
                 <input
                   type="text"
                   required
-                  value={patientPhone}
-                  onChange={(e) => setPatientPhone(e.target.value)}
-                  placeholder="(612) 555-0199"
+                  value={patientName}
+                  onChange={(e) => setPatientName(e.target.value)}
+                  placeholder="e.g. John Doe"
                   className="w-full border border-border-subtle rounded-xl px-3 py-2 text-sm bg-surface-muted text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-label-md uppercase text-on-surface-variant mb-1 font-bold">
+                  Patient Email / Mobile Phone
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={patientContact}
+                  onChange={(e) => setPatientContact(e.target.value)}
+                  placeholder="patient@example.com or (612) 555-0199"
+                  className="w-full border border-border-subtle rounded-xl px-3 py-2 text-sm bg-surface-muted text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-label-md uppercase text-on-surface-variant mb-1 font-bold">
+                  Midwest Spine Location / Practice
+                </label>
+                <select
+                  value={selectedClinicId}
+                  onChange={(e) => setSelectedClinicId(e.target.value)}
+                  className="w-full border border-border-subtle rounded-xl px-3 py-2 text-sm bg-surface-muted text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">All Locations (Default Main Practice)</option>
+                  {rawClinics.map((c: any) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-label-md uppercase text-on-surface-variant mb-1 font-bold">
+                  Delivery Channel & Security
+                </label>
+                <select
+                  value={deliveryMethod}
+                  onChange={(e) => setDeliveryMethod(e.target.value as 'EMAIL' | 'SMS')}
+                  className="w-full border border-border-subtle rounded-xl px-3 py-2 text-sm bg-surface-muted text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="EMAIL">🔒 Paubox Encrypted Email (HIPAA Compliant)</option>
+                  <option value="SMS">📱 SMS Text Message (Twilio)</option>
+                </select>
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-border-subtle">

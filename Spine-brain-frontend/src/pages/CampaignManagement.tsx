@@ -2,29 +2,74 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../api/client';
+import { apiClient, API_BASE_URL } from '../api/client';
+import { useToast } from '../context/ToastContext';
 import { CampaignItem } from '../types/crm';
+
+interface TaskRecord {
+  id: string;
+  campaignId: string;
+  title: string;
+  status: string;
+  assignedTo?: string;
+  dueDate?: string;
+  createdAt?: string;
+  campaign?: { name: string };
+}
+
+interface AssetRecord {
+  id: string;
+  campaignId: string;
+  name: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: string;
+  mimeType: string;
+  createdAt?: string;
+  campaign?: { name: string };
+}
 
 const fetchCampaigns = async (): Promise<CampaignItem[]> => {
   const res = await apiClient<{ success: boolean; data: any[] }>('/campaigns');
-  return res.data.map((c) => ({
-    id: c.id,
-    title: c.name,
-    owner: c.owner?.firstName ? `${c.owner.firstName} ${c.owner.lastName}` : 'System',
-    status: c.status,
-    budget: `$${Number(c.budget).toLocaleString()}`,
-    spent: `$${Number(c.spend || 0).toLocaleString()}`,
-    roi: c.roi ? `+ ${c.roi}%` : '--',
-    channel: 'Digital Ads',
-    leads: c.leadsGenerated || 0,
-    startDate: new Date(c.startDate).toLocaleDateString(),
-    endDate: c.endDate ? new Date(c.endDate).toLocaleDateString() : 'TBD'
-  }));
+  return res.data.map((c) => {
+    let normalizedStatus: 'Active' | 'Draft' | 'Paused' = 'Active';
+    if (c.status === 'ENABLED' || c.status === 'Active') {
+      normalizedStatus = 'Active';
+    } else if (c.status === 'PAUSED' || c.status === 'Paused') {
+      normalizedStatus = 'Paused';
+    } else if (c.status === 'Draft' || c.status === 'REMOVED') {
+      normalizedStatus = 'Draft';
+    }
+
+    const channelName = c.platform === 'google_ads' ? 'Google Ads' : (c.channel || 'Digital Ads');
+
+    return {
+      id: c.id,
+      title: c.name,
+      owner: c.owner ? `${c.owner.firstName} ${c.owner.lastName}` : 'Marketing Lead',
+      status: normalizedStatus,
+      budget: `$${Number(c.budget || 0).toLocaleString()}`,
+      spent: `$${Number(c.spend || 0).toLocaleString()}`,
+      roi: c.roi ? `+${c.roi}%` : 'N/A',
+      channel: channelName,
+      leads: c.leadsGenerated || 0,
+      startDate: c.startDate ? new Date(c.startDate).toISOString().split('T')[0] : 'N/A',
+      endDate: c.endDate ? new Date(c.endDate).toISOString().split('T')[0] : 'N/A',
+      platform: c.platform || 'crm',
+      externalCampaignId: c.externalCampaignId,
+      impressions: c.impressions || 0,
+      clicks: c.clicks || 0,
+      ctr: c.ctr || 0,
+      cpc: c.cpc || 0,
+      conversions: c.conversions || 0,
+      conversionValue: c.conversionValue || 0,
+    };
+  });
 };
 
 const subViewTitles: Record<string, { title: string; subtitle: string }> = {
-  'all': { title: 'All Marketing Campaigns', subtitle: 'Overview of all active, draft, and paused marketing campaigns.' },
-  'active': { title: 'Active Campaigns Directory', subtitle: 'Currently running marketing initiatives and real-time performance.' },
+  'all': { title: 'All Campaign Directory', subtitle: 'Central operations overview for active, draft, and completed campaigns.' },
+  'active': { title: 'Active Marketing Campaigns', subtitle: 'Live campaigns currently generating traffic, leads, and provider consults.' },
   'calendar': { title: 'Campaign Calendar & Execution Timeline', subtitle: 'Quarterly timeline, launch milestones, and scheduled promotional drives.' },
   'goals': { title: 'Campaign Goals & Performance KPIs', subtitle: 'Target vs actual lead acquisition goals and target CPA metrics.' },
   'assets': { title: 'Campaign Creative Assets & Documents', subtitle: 'Brochures, digital graphic ad sets, and video asset store.' },
@@ -34,23 +79,21 @@ const subViewTitles: Record<string, { title: string; subtitle: string }> = {
 export const CampaignManagement: React.FC = () => {
   const { subview } = useParams<{ subview?: string }>();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
   
   const { data: campaigns = [], isLoading } = useQuery({
     queryKey: ['campaigns'],
     queryFn: fetchCampaigns
   });
-  
-  // Modals state
+
+  const [isSyncingAds, setIsSyncingAds] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [showMetricsModal, setShowMetricsModal] = useState<boolean>(false);
-  
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignItem | null>(null);
 
-  // Create Form State
   const [newTitle, setNewTitle] = useState<string>('');
   const [newBudget, setNewBudget] = useState<string>('');
-  const [newOwner, setNewOwner] = useState<string>('Admin User');
   const [newStatus, setNewStatus] = useState<string>('Active');
   const [newStartDate, setNewStartDate] = useState<string>('');
   const [newEndDate, setNewEndDate] = useState<string>('');
@@ -58,6 +101,86 @@ export const CampaignManagement: React.FC = () => {
 
   const activeSubViewKey = subview || 'all';
   const meta = subViewTitles[activeSubViewKey] || subViewTitles['all'];
+
+  const { data: assets = [], isLoading: isAssetsLoading } = useQuery({
+    queryKey: ['campaign-assets'],
+    queryFn: async () => {
+      const res = await apiClient<{ success: boolean; data: AssetRecord[] }>('/campaigns/assets/all');
+      return res.data || [];
+    },
+    enabled: activeSubViewKey === 'assets'
+  });
+
+  const { data: tasks = [], isLoading: isTasksLoading } = useQuery({
+    queryKey: ['campaign-tasks'],
+    queryFn: async () => {
+      const res = await apiClient<{ success: boolean; data: TaskRecord[] }>('/campaigns/tasks/all');
+      return res.data || [];
+    },
+    enabled: activeSubViewKey === 'tasks'
+  });
+
+  const updateTaskStatusMutation = useMutation({
+    mutationFn: async ({ taskId, status }: { taskId: string; status: string }) => {
+      return apiClient(`/campaigns/tasks/${taskId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ status })
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['campaign-tasks'] });
+      showSuccess('Task status updated successfully!');
+    },
+    onError: (err: any) => {
+      showError('Failed to update task: ' + err.message);
+    }
+  });
+
+  const handleDownloadRealAsset = async (assetId: string, fileName: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/campaigns/assets/${assetId}/download`, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : ''
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Download failed with status ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      showSuccess(`Downloaded ${fileName} successfully!`);
+    } catch (err: any) {
+      showError('Asset download failed: ' + err.message);
+    }
+  };
+
+  const handleSyncGoogleAds = async () => {
+    if (isSyncingAds) return;
+    setIsSyncingAds(true);
+    try {
+      const res = await apiClient<{ success: boolean; message: string }>('/integrations/google-ads/sync', { method: 'POST' });
+      if (res.success) {
+        showSuccess('Google Ads campaigns synced successfully!');
+        queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      } else {
+        showError(res.message || 'Failed to sync Google Ads');
+      }
+    } catch (err: any) {
+      showError('Google Ads sync failed: ' + err.message);
+    } finally {
+      setIsSyncingAds(false);
+    }
+  };
 
   const filteredCampaigns = campaigns.filter((c) => {
     if (activeSubViewKey === 'active') return c.status === 'Active';
@@ -72,11 +195,6 @@ export const CampaignManagement: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
       setShowCreateModal(false);
-      setNewTitle('');
-      setNewBudget('');
-      setNewStartDate('');
-      setNewEndDate('');
-      setNewGoal('');
     }
   });
 
@@ -93,13 +211,11 @@ export const CampaignManagement: React.FC = () => {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle) return;
-    
     createMutation.mutate({
       name: newTitle,
       status: newStatus,
       budget: parseFloat(newBudget || '0'),
-      startDate: newStartDate || new Date().toISOString(),
+      startDate: newStartDate,
       endDate: newEndDate || undefined,
       goal: newGoal
     });
@@ -108,13 +224,7 @@ export const CampaignManagement: React.FC = () => {
   const handleEditSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCampaign) return;
-    
-    updateMutation.mutate({
-      id: selectedCampaign.id,
-      name: selectedCampaign.title,
-      status: selectedCampaign.status,
-      budget: parseFloat(selectedCampaign.budget.replace(/[^0-9.-]+/g,""))
-    });
+    updateMutation.mutate(selectedCampaign);
   };
 
   const openEditModal = (camp: CampaignItem) => {
@@ -127,44 +237,32 @@ export const CampaignManagement: React.FC = () => {
     setShowMetricsModal(true);
   };
 
-  const downloadDocument = (filename: string, fileType: string) => {
-    // Generate a dummy blob and trigger download to simulate proper document download
-    const content = `Mock content for ${filename}\nFile Type: ${fileType}`;
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
   return (
-    <div className="space-y-5 sm:space-y-6 text-left relative">
-      {/* Universal Fixed Top Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 border-b border-border-subtle pb-4">
+    <div className="space-y-6 text-left">
+      <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-left">
         <div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="font-headline-lg text-lg sm:text-xl md:text-2xl text-primary font-bold leading-tight text-left">
-              {meta.title}
-            </h1>
-            <span className="bg-primary-container text-on-primary-container px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold whitespace-nowrap inline-flex items-center shrink-0">
-              Database Sync Connected
-            </span>
-          </div>
-          <p className="font-body-md text-on-surface-variant text-xs mt-1 text-left">
+          <h1 className="font-headline-md text-xl sm:text-2xl font-bold text-primary text-left">
+            {meta.title}
+          </h1>
+          <p className="text-xs sm:text-sm text-on-surface-variant mt-1 text-left">
             {meta.subtitle}
           </p>
         </div>
-        <div className="flex gap-2 self-start sm:self-auto shrink-0">
+        <div className="flex flex-wrap gap-2 self-start sm:self-auto shrink-0">
+          <button
+            onClick={handleSyncGoogleAds}
+            disabled={isSyncingAds}
+            className="bg-secondary/10 hover:bg-secondary/20 text-secondary border border-secondary/30 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+          >
+            <span className={`material-symbols-outlined text-base ${isSyncingAds ? 'animate-spin' : ''}`}>sync</span>
+            <span>{isSyncingAds ? 'Syncing...' : 'Sync Ads'}</span>
+          </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="btn-primary-vibrant font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all active:scale-95 shadow-sm cursor-pointer whitespace-nowrap"
+            className="btn-primary-vibrant font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all active:scale-95 shadow-sm cursor-pointer"
           >
             <span className="material-symbols-outlined text-base">add_circle</span>
-            <span>Create New Campaign</span>
+            <span>Create Campaign</span>
           </button>
         </div>
       </div>
@@ -172,64 +270,63 @@ export const CampaignManagement: React.FC = () => {
       {isLoading ? (
         <div className="py-20 text-center font-bold text-primary">Loading Campaigns...</div>
       ) : activeSubViewKey === 'calendar' ? (
-        <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-sm space-y-4 text-left">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-b border-border-subtle pb-3">
-            <h2 className="font-headline-sm text-sm sm:text-base font-bold text-primary">Q3 Campaign Execution Schedule</h2>
-            <span className="text-xs font-bold text-secondary">Timeline</span>
-          </div>
-
+        <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
           <div className="space-y-3">
             {campaigns.map((c) => (
-              <div key={c.id} className="p-3.5 border border-border-subtle rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 bg-surface-muted/50 text-left">
+              <div key={c.id} className="p-3.5 border border-border-subtle rounded-xl flex justify-between items-center bg-surface-muted/50">
                 <div>
-                  <h3 className="font-bold text-xs sm:text-sm text-primary text-left">{c.title}</h3>
-                  <p className="text-xs text-on-surface-variant text-left">Owner: {c.owner} • {c.channel}</p>
+                  <h3 className="font-bold text-sm text-primary">{c.title}</h3>
+                  <p className="text-xs text-on-surface-variant">Owner: {c.owner} • {c.channel}</p>
                 </div>
-                <div className="text-left sm:text-right">
-                  <span className="text-xs font-data-mono font-bold text-primary">{c.startDate} — {c.endDate}</span>
-                  <p className="text-[11px] text-status-success font-bold mt-0.5">{c.budget}</p>
+                <div className="text-right">
+                  <span className="text-xs font-mono font-bold text-primary">{c.startDate} — {c.endDate}</span>
+                  <p className="text-[11px] text-status-success font-bold">{c.budget}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
       ) : activeSubViewKey === 'goals' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 text-left">
-          <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
-            <h3 className="font-bold text-sm sm:text-base text-primary border-b border-border-subtle pb-2 text-left">Target vs Actual Leads Goal</h3>
-            <div className="space-y-3 text-xs">
-              <div>
-                <div className="flex justify-between font-bold mb-1">
-                  <span>Spine Health Push Goal</span>
-                  <span className="text-primary font-mono">312 / 400 Leads (78%)</span>
-                </div>
-                <div className="w-full bg-surface-container-highest rounded-full h-2.5">
-                  <div className="bg-primary h-2.5 rounded-full" style={{ width: '78%' }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between font-bold mb-1">
-                  <span>Neurology Consult Target</span>
-                  <span className="text-primary font-mono">184 / 200 Leads (92%)</span>
-                </div>
-                <div className="w-full bg-surface-container-highest rounded-full h-2.5">
-                  <div className="bg-status-success h-2.5 rounded-full" style={{ width: '92%' }}></div>
-                </div>
+        <div className="space-y-5 text-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 text-left">
+            <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+              <h3 className="font-bold text-sm sm:text-base text-primary border-b border-border-subtle pb-2 text-left">CRM Database Lead Goals Progress</h3>
+              <div className="space-y-3 text-xs">
+                {campaigns.filter(c => c.leads > 0 || c.budget).map((c) => {
+                  const targetMatch = c.title.match(/(\d+)\s*Leads/i) || [null, '200'];
+                  const targetLeads = parseInt(targetMatch[1] || '200', 10);
+                  const pct = Math.min(100, Math.round((c.leads / targetLeads) * 100));
+                  return (
+                    <div key={c.id}>
+                      <div className="flex justify-between font-bold mb-1">
+                        <span>{c.title}</span>
+                        <span className="text-primary font-mono">{c.leads} / {targetLeads} Leads ({pct}%)</span>
+                      </div>
+                      <div className="w-full bg-surface-container-highest rounded-full h-2.5">
+                        <div className="bg-primary h-2.5 rounded-full" style={{ width: `${pct}%` }}></div>
+                      </div>
+                    </div>
+                  );
+                })}
+                {campaigns.length === 0 && (
+                  <p className="text-on-surface-variant italic">No active CRM lead goals configured.</p>
+                )}
               </div>
             </div>
-          </div>
 
-          <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
-            <h3 className="font-bold text-sm sm:text-base text-primary border-b border-border-subtle pb-2 text-left">Cost Per Acquisition (CPA) Goals</h3>
-            <div className="space-y-3 text-xs">
-              <div className="flex justify-between p-3 bg-surface-muted border border-border-subtle rounded-xl">
-                <span>Google Spine Ads Target CPA</span>
-                <span className="font-bold text-status-success">$47.85 (Goal &lt; $55.00)</span>
-              </div>
-              <div className="flex justify-between p-3 bg-surface-muted border border-border-subtle rounded-xl">
-                <span>Meta Social Ads Target CPA</span>
-                <span className="font-bold text-status-warning">$46.66 (Goal &lt; $40.00)</span>
+            <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+              <h3 className="font-bold text-sm sm:text-base text-primary border-b border-border-subtle pb-2 text-left">Cost Per Lead (CPL / CPA) Performance</h3>
+              <div className="space-y-3 text-xs">
+                {campaigns.map((c) => {
+                  const spendNum = parseFloat(c.spent.replace(/[^0-9.-]+/g, '') || '0');
+                  const cpa = c.leads > 0 ? (spendNum / c.leads).toFixed(2) : '0.00';
+                  return (
+                    <div key={c.id} className="flex justify-between p-3 bg-surface-muted border border-border-subtle rounded-xl">
+                      <span>{c.title} ({c.channel})</span>
+                      <span className="font-bold text-status-success">${cpa} / Lead</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -240,65 +337,80 @@ export const CampaignManagement: React.FC = () => {
             Campaign Creative Assets & Document Store
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 text-xs">
-            {[
-              { name: 'Spine_Surgery_Brochure.pdf', size: '4.2 MB', type: 'PDF Document', date: 'Aug 04, 2026' },
-              { name: 'Minimally_Invasive_Ad_1080x1080.png', size: '1.8 MB', type: 'Graphic Asset', date: 'Aug 02, 2026' },
-              { name: 'Doctor_Consult_Video.mp4', size: '24.5 MB', type: 'Video Asset', date: 'Jul 28, 2026' },
-            ].map((file, idx) => (
-              <div key={idx} className="p-3 border border-border-subtle rounded-xl bg-surface-muted/30 flex justify-between items-center hover:border-primary transition-all text-left overflow-hidden">
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <span className="material-symbols-outlined text-secondary text-xl sm:text-2xl shrink-0">description</span>
-                  <div className="min-w-0 flex-1 text-left">
-                    <p className="font-bold text-primary truncate text-xs sm:text-sm text-left">{file.name}</p>
-                    <p className="text-[11px] text-on-surface-variant text-left">{file.type} • {file.size}</p>
+          {isAssetsLoading ? (
+            <div className="py-12 text-center text-sm font-bold text-on-surface-variant">Loading Assets from Storage...</div>
+          ) : assets.length === 0 ? (
+            <div className="py-12 text-center text-sm font-bold text-on-surface-variant border border-dashed border-border-subtle rounded-2xl">
+              No creative assets uploaded in database storage yet.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 text-xs">
+              {assets.map((asset) => (
+                <div key={asset.id} className="p-3 border border-border-subtle rounded-xl bg-surface-muted/30 flex justify-between items-center hover:border-primary transition-all text-left overflow-hidden">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <span className="material-symbols-outlined text-secondary text-xl sm:text-2xl shrink-0">
+                      {asset.mimeType.includes('pdf') ? 'picture_as_pdf' : asset.mimeType.includes('image') ? 'image' : 'movie'}
+                    </span>
+                    <div className="min-w-0 flex-1 text-left">
+                      <p className="font-bold text-primary truncate text-xs sm:text-sm text-left">{asset.name}</p>
+                      <p className="text-[11px] text-on-surface-variant text-left">{asset.fileType} • {asset.fileSize}</p>
+                    </div>
                   </div>
+                  <button
+                    onClick={() => handleDownloadRealAsset(asset.id, asset.name)}
+                    className="p-2 bg-surface-container hover:bg-surface-container-high text-primary font-bold rounded-xl cursor-pointer shrink-0 ml-2 flex items-center justify-center shadow-xs"
+                    title={`Download ${asset.name}`}
+                  >
+                    <span className="material-symbols-outlined text-base">download</span>
+                  </button>
                 </div>
-                <button
-                  onClick={() => downloadDocument(file.name, file.type)}
-                  className="p-2 bg-surface-container hover:bg-surface-container-high text-primary font-bold rounded-xl cursor-pointer shrink-0 ml-2 flex items-center justify-center shadow-xs"
-                  title={`Download ${file.name}`}
-                >
-                  <span className="material-symbols-outlined text-base">download</span>
-                </button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : activeSubViewKey === 'tasks' ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 text-left">
-          <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 space-y-3 shadow-sm">
-            <h3 className="font-bold text-sm text-primary border-b border-border-subtle pb-2 flex justify-between">
-              <span>To Do</span>
-              <span className="bg-surface-container text-primary px-2 py-0.5 rounded text-xs font-bold">2</span>
-            </h3>
-            <div className="p-3 bg-surface-muted border border-border-subtle rounded-xl text-xs space-y-1 text-left">
-              <p className="font-bold text-primary">Finalize Spine Surgery TV Spot</p>
-              <p className="text-on-surface-variant text-[11px]">Assigned to: Sarah Jenkins</p>
+        <div className="space-y-4">
+          {isTasksLoading ? (
+            <div className="py-12 text-center text-sm font-bold text-on-surface-variant">Loading Tasks...</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 text-left">
+              {['To Do', 'In Progress', 'Completed'].map((columnStatus) => {
+                const columnTasks = tasks.filter(t => t.status === columnStatus);
+                return (
+                  <div key={columnStatus} className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 space-y-3 shadow-sm text-left">
+                    <h3 className="font-bold text-sm text-primary border-b border-border-subtle pb-2 flex justify-between">
+                      <span>{columnStatus}</span>
+                      <span className="bg-surface-container text-primary px-2 py-0.5 rounded text-xs font-bold">{columnTasks.length}</span>
+                    </h3>
+                    {columnTasks.length === 0 ? (
+                      <p className="text-xs text-on-surface-variant italic py-4 text-center">No tasks in {columnStatus}</p>
+                    ) : (
+                      columnTasks.map((t) => (
+                        <div key={t.id} className="p-3 bg-surface-muted border border-border-subtle rounded-xl text-xs space-y-2 text-left">
+                          <div>
+                            <p className="font-bold text-primary text-left">{t.title}</p>
+                            <p className="text-on-surface-variant text-[11px] text-left">Assigned to: {t.assignedTo || 'Unassigned'}</p>
+                          </div>
+                          <div className="pt-2 border-t border-border-subtle flex justify-between items-center">
+                            <span className="text-[10px] text-on-surface-variant font-mono">Move Status:</span>
+                            <select
+                              value={t.status}
+                              onChange={(e) => updateTaskStatusMutation.mutate({ taskId: t.id, status: e.target.value })}
+                              className="text-[11px] border border-border-subtle bg-surface-container rounded px-1.5 py-0.5 font-bold text-primary"
+                            >
+                              <option value="To Do">To Do</option>
+                              <option value="In Progress">In Progress</option>
+                              <option value="Completed">Completed</option>
+                            </select>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            <div className="p-3 bg-surface-muted border border-border-subtle rounded-xl text-xs space-y-1 text-left">
-              <p className="font-bold text-primary">Upload Meta Retargeting Pixel</p>
-              <p className="text-on-surface-variant text-[11px]">Assigned to: Digital Media Team</p>
-            </div>
-          </div>
-
-          <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 space-y-3 shadow-sm text-left">
-            <h3 className="font-bold text-sm text-primary border-b border-border-subtle pb-2 flex justify-between">
-              <span>In Progress</span>
-              <span className="bg-primary-container text-on-primary-container px-2 py-0.5 rounded text-xs font-bold">0</span>
-            </h3>
-          </div>
-
-          <div className="bg-surface-container-lowest border border-border-subtle rounded-2xl p-4 space-y-3 shadow-sm text-left">
-            <h3 className="font-bold text-sm text-primary border-b border-border-subtle pb-2 flex justify-between">
-              <span>Completed</span>
-              <span className="bg-status-success/20 text-status-success px-2 py-0.5 rounded text-xs font-bold">3</span>
-            </h3>
-            <div className="p-3 bg-surface-muted border border-border-subtle rounded-xl text-xs space-y-1 text-left">
-              <p className="font-bold text-primary">Budget Allocations Audit</p>
-              <p className="text-on-surface-variant text-[11px]">Completed by: Dr. Vance</p>
-            </div>
-          </div>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 text-left">
@@ -309,12 +421,12 @@ export const CampaignManagement: React.FC = () => {
             >
               <div>
                 <div className="flex justify-between items-start mb-3 border-b border-border-subtle pb-3">
-                  <div className="text-left">
-                    <h2 className="font-headline-sm text-sm sm:text-base text-primary font-bold text-left">{camp.title}</h2>
-                    <p className="font-body-sm text-xs text-on-surface-variant mt-0.5 text-left">Owner: {camp.owner}</p>
+                  <div className="text-left min-w-0 flex-1 pr-2">
+                    <h2 className="font-headline-sm text-sm sm:text-base text-primary font-bold text-left truncate">{camp.title}</h2>
+                    <p className="font-body-sm text-xs text-on-surface-variant mt-0.5 text-left truncate">Owner: {camp.owner}</p>
                   </div>
                   <span
-                    className={`font-label-md text-[10px] px-2 py-0.5 rounded border uppercase tracking-wider font-bold shrink-0 ml-2 ${
+                    className={`font-label-md text-[10px] px-2 py-0.5 rounded border uppercase tracking-wider font-bold shrink-0 ${
                       camp.status === 'Active'
                         ? 'bg-status-success/20 text-status-success border-status-success/30'
                         : camp.status === 'Draft'
@@ -486,7 +598,7 @@ export const CampaignManagement: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div className="bg-surface-muted border border-border-subtle rounded-xl p-3 text-center">
                 <p className="text-[10px] uppercase font-bold text-on-surface-variant">Allocated Budget</p>
                 <p className="font-data-mono font-bold text-primary mt-1">{selectedCampaign.budget}</p>
@@ -504,6 +616,30 @@ export const CampaignManagement: React.FC = () => {
                 <p className="font-data-mono font-bold text-status-success mt-1">{selectedCampaign.roi}</p>
               </div>
             </div>
+
+            {selectedCampaign.platform === 'google_ads' && (
+              <div className="bg-surface-container border border-border-subtle rounded-xl p-4 mb-4 space-y-2 text-xs">
+                <p className="font-bold text-primary uppercase text-[10px]">Google Ads Real-Time Performance Breakdown</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                  <div>
+                    <span className="text-[10px] text-on-surface-variant font-bold">Impressions</span>
+                    <p className="font-mono font-bold text-on-surface">{selectedCampaign.impressions?.toLocaleString() || 0}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-on-surface-variant font-bold">Clicks</span>
+                    <p className="font-mono font-bold text-on-surface">{selectedCampaign.clicks?.toLocaleString() || 0}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-on-surface-variant font-bold">CTR (%)</span>
+                    <p className="font-mono font-bold text-on-surface">{selectedCampaign.ctr || 0}%</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-on-surface-variant font-bold">Avg CPC ($)</span>
+                    <p className="font-mono font-bold text-on-surface">${selectedCampaign.cpc || 0}</p>
+                  </div>
+                </div>
+              </div>
+            )}
             
             <div className="bg-surface-container border border-border-subtle rounded-xl p-4 flex items-center justify-center min-h-[150px] mb-4">
               <p className="text-sm font-bold text-on-surface-variant">Performance Chart Placeholder</p>
