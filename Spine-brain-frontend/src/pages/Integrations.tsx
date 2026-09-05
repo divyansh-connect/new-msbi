@@ -38,7 +38,7 @@ const uiDefinitions: Record<string, Omit<IntegrationConnector, 'connected' | 'la
   'mailchimp': { id: 'mailchimp', name: 'Mailchimp Newsletter', category: 'Email Marketing', icon: 'mail', description: 'Patient education newsletters, post-op care email series, and subscriber list sync.', dataPoints: ['Email Drips', 'Open Rates', 'Unsubscribes', 'Care Series'] },
   'gbp': { id: 'gbp', name: 'Google Business Profile', category: 'Reputation & Reviews', icon: 'grade', description: 'Google star ratings, patient review feed, location ranking scores, and official clinic replies.', dataPoints: ['Google Reviews', 'Star Rating Average', 'Location Ranking', 'Review Requests'] },
   'custom-api': { id: 'custom-api', name: 'Custom REST / Webhooks API', category: 'Developer API', icon: 'api', description: 'Enterprise master API key, inbound webhook listeners, and custom JSON payload integration.', dataPoints: ['Master Key', 'Webhook Secret', 'REST Endpoints', 'JSON Payloads'] },
-  'wordpress': { id: 'wordpress', name: 'WordPress CMS', category: 'Content Sync', icon: 'web', description: 'Syncs providers, locations, conditions, and treatments from the main website.', dataPoints: ['Providers', 'Locations', 'Custom Post Types', 'Forms'] }
+  'microsoft_outlook': { id: 'microsoft_outlook', name: 'Microsoft Outlook / 365', category: 'Transactional Email', icon: 'mail', description: 'Sends patient review requests, clinic notifications, and transactional CRM emails using connected Microsoft 365 mailbox via Microsoft Graph API.', dataPoints: ['Mail.Send', 'User.Read', 'Connected Mailbox', 'Sent Items Sync'] }
 };
 
 export const Integrations: React.FC = () => {
@@ -432,6 +432,14 @@ export const Integrations: React.FC = () => {
     window.location.href = `${API_BASE_URL}/integrations/google/oauth/start${originParam}${subviewParam}${tokenParam}`;
   };
 
+  const initiateMicrosoftOAuth = () => {
+    const originParam = `?redirect_origin=${encodeURIComponent(window.location.origin)}`;
+    const subviewParam = `&subview=microsoft_outlook`;
+    const token = localStorage.getItem('token');
+    const tokenParam = token ? `&token=${encodeURIComponent(token)}` : '';
+    window.location.href = `${API_BASE_URL}/integrations/outlook/oauth/start${originParam}${subviewParam}${tokenParam}`;
+  };
+
   const handleCloseModal = () => {
     fetchedGbpModalIdRef.current = null;
     setActiveModalConnector(null);
@@ -564,14 +572,49 @@ export const Integrations: React.FC = () => {
                 </div>
               )}
 
-              {!currentConnector?.connected && (
-                <div className="p-3 bg-status-warning/10 border border-status-warning/30 text-status-warning rounded-xl">
-                  <p className="font-bold">Credentials Required</p>
-                  <p className="text-xs mt-1">Please connect securely via the backend to enable this integration.</p>
+              {currentConnector?.connected && currentConnector.id === 'microsoft_outlook' && (
+                <div className="mt-2 text-center">
+                  <button 
+                    onClick={initiateMicrosoftOAuth} 
+                    className="bg-secondary/10 hover:bg-secondary/15 text-secondary border border-secondary/20 px-3 py-2.5 rounded-xl font-bold cursor-pointer w-full text-xs flex items-center justify-center gap-2 transition-all duration-150"
+                  >
+                    <span className="material-symbols-outlined text-sm">sync</span>
+                    Reconnect Microsoft Outlook
+                  </button>
                 </div>
               )}
 
-              {(currentConnector?.id === 'wordpress') ? (
+              {!currentConnector?.connected && (
+                <div className="p-3 bg-status-warning/10 border border-status-warning/30 text-status-warning rounded-xl">
+                  <p className="font-bold">Credentials Required</p>
+                  <p className="text-xs mt-1">Please connect securely via Microsoft 365 OAuth to enable email delivery.</p>
+                </div>
+              )}
+
+              {currentConnector?.id === 'microsoft_outlook' ? (
+                <div className="mt-4 text-xs space-y-4">
+                  {currentConnector.connected ? (
+                    <div className="p-3 bg-surface-muted border border-border-subtle rounded-xl flex flex-col gap-1">
+                      <span className="text-[10px] uppercase font-bold text-on-surface-variant">Connected Mailbox</span>
+                      <span className="font-bold text-primary text-sm">
+                        {currentConnector.config?.userEmail || 'Connected (Microsoft 365)'}
+                      </span>
+                      {currentConnector.config?.displayName && (
+                        <span className="text-xs text-on-surface-variant">
+                          {currentConnector.config.displayName}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="mt-4 text-center">
+                      <button onClick={initiateMicrosoftOAuth} className="btn-primary-vibrant px-4 py-2.5 rounded-xl font-bold cursor-pointer w-full text-sm flex items-center justify-center gap-2">
+                        <span className="material-symbols-outlined">login</span>
+                        Connect Outlook / Microsoft 365
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (currentConnector?.id === 'wordpress') ? (
                 <div className="mt-4 text-xs">
                   <div className="p-3 bg-surface-muted border border-border-subtle rounded-xl flex justify-between items-center mb-4">
                     <span>Base URL</span>
@@ -754,7 +797,7 @@ export const Integrations: React.FC = () => {
               )}
 
               <div className="flex justify-between items-center pt-4 border-t border-border-subtle">
-                {(currentConnector?.id !== 'ga4' && currentConnector?.id !== 'gsc' && currentConnector?.id !== 'google-ads' && currentConnector?.id !== 'wordpress' && currentConnector?.id !== 'gbp') && (
+                {(currentConnector?.id !== 'ga4' && currentConnector?.id !== 'gsc' && currentConnector?.id !== 'google-ads' && currentConnector?.id !== 'wordpress' && currentConnector?.id !== 'gbp' && currentConnector?.id !== 'microsoft_outlook') && (
                   <button
                     type="button"
                     onClick={() => toggleConnection(currentConnector.id)}

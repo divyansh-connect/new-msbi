@@ -121,6 +121,7 @@ export const navStructure: MenuItem[] = [
       { label: 'Mailchimp', path: '/integrations/mailchimp' },
       { label: 'Google Business Profile', path: '/integrations/gbp' },
       { label: 'Custom API', path: '/integrations/custom-api' },
+      { label: 'Microsoft Outlook', path: '/integrations/microsoft_outlook' },
     ],
   },
   {

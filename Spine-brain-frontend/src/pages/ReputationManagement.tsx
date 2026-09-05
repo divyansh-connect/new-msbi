@@ -400,7 +400,7 @@ export const ReputationManagement: React.FC = () => {
                       clinicId: selectedClinicId || null
                     })
                   });
-                  showSuccess(`Review Request sent to ${patientName} via ${deliveryMethod === 'EMAIL' ? 'Paubox Encrypted Email' : 'SMS'}`);
+                  showSuccess(`Review Request sent to ${patientName} via ${deliveryMethod === 'EMAIL' ? 'Microsoft Outlook / 365 Email' : 'SMS'}`);
                   setShowRequestModal(false);
                   setPatientName('');
                   setPatientContact('');
@@ -468,7 +468,7 @@ export const ReputationManagement: React.FC = () => {
                   onChange={(e) => setDeliveryMethod(e.target.value as 'EMAIL' | 'SMS')}
                   className="w-full border border-border-subtle rounded-xl px-3 py-2 text-sm bg-surface-muted text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
                 >
-                  <option value="EMAIL">🔒 Paubox Encrypted Email (HIPAA Compliant)</option>
+                  <option value="EMAIL">📧 Microsoft Outlook / 365 Email</option>
                   <option value="SMS">📱 SMS Text Message (Twilio)</option>
                 </select>
               </div>
