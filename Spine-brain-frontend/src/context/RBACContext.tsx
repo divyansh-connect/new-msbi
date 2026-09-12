@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { UserRole } from '../types/crm';
 import { apiClient } from '../api/client';
+import { useAuth } from './AuthContext';
 
 export type PermissionsMap = Record<string, boolean>;
 export type PermissionsMatrixType = Record<UserRole, PermissionsMap>;
@@ -25,6 +26,7 @@ interface RBACContextType {
 const RBACContext = createContext<RBACContextType | undefined>(undefined);
 
 export const RBACProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [permissionsMatrix, setPermissionsMatrix] = useState<PermissionsMatrixType>({});
   const [systemRoles, setSystemRoles] = useState<Record<string, boolean>>({});
@@ -56,8 +58,16 @@ export const RBACProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   useEffect(() => {
-    fetchRoles();
-  }, []);
+    if (isAuthenticated) {
+      fetchRoles();
+    } else {
+      setRoles([]);
+      setPermissionsMatrix({});
+      setSystemRoles({});
+      setLoading(false);
+    }
+  }, [isAuthenticated, user?.email, user?.role]);
+
 
   const togglePermission = async (role: UserRole, permissionKey: string) => {
     // Optimistic UI update

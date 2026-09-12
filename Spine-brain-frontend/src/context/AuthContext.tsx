@@ -72,6 +72,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (res.success && res.data?.token) {
         localStorage.setItem('token', res.data.token);
+        queryClient.clear();
         setUser({
           name: `${res.data.user.firstName} ${res.data.user.lastName}`,
           email: res.data.user.email,
